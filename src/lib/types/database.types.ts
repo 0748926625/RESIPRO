@@ -1133,6 +1133,14 @@ export type Database = {
         Returns: string
       }
       owns_property: { Args: { p_property_id: string }; Returns: boolean }
+      set_property_status: {
+        Args: {
+          p_allowed_from: Database["public"]["Enums"]["property_status"][]
+          p_new_status: Database["public"]["Enums"]["property_status"]
+          p_property_id: string
+        }
+        Returns: undefined
+      }
       submit_payment: { Args: { p_payment_id: string }; Returns: undefined }
       write_audit_log: {
         Args: {
