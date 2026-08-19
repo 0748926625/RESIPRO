@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { windowsFromRules } from "@/lib/services/availability.service";
 import { createClient } from "@/lib/supabase/server";
 import { DAY_OF_WEEK_LABELS } from "@/lib/validations/availability.schema";
 
+import { joinSharedBooking } from "./actions";
 import { BookingForm } from "./booking-form";
+import { SharedBookingForm } from "./shared-booking-form";
 
 type Property = {
   id: string;
@@ -78,7 +81,7 @@ export default async function ResidenceDetailPage({
   }
 
   const supabase = await createClient();
-  const [{ data: rules }, { data: viewerData }] = await Promise.all([
+  const [{ data: rules }, { data: viewerData }, { data: openRequests }] = await Promise.all([
     supabase
       .from("availability_rules")
       .select("day_of_week, open_time, close_time")
@@ -87,7 +90,46 @@ export default async function ResidenceDetailPage({
       .order("day_of_week")
       .order("open_time"),
     supabase.auth.getUser(),
+    supabase
+      .from("shared_booking_requests")
+      .select("id, requested_start, requested_end, initiator_profile_id, expires_at")
+      .eq("property_id", property.id)
+      .eq("status", "searching_partner")
+      .order("requested_start"),
   ]);
+
+  const activeRules = (rules ?? []).map((rule) => ({
+    dayOfWeek: rule.day_of_week,
+    openTime: rule.open_time,
+    closeTime: rule.close_time,
+    isActive: true,
+  }));
+
+  const now = new Date();
+  const viewerId = viewerData.user?.id;
+  const joinableRequests = (openRequests ?? [])
+    .filter((request) => request.initiator_profile_id !== viewerId)
+    .filter((request) => !request.expires_at || new Date(request.expires_at) > now)
+    .map((request) => {
+      const requestedStart = new Date(request.requested_start);
+      const requestedEnd = new Date(request.requested_end);
+      const dayWindow = windowsFromRules(activeRules, requestedStart).find(
+        (window) => window.start <= requestedStart && requestedEnd <= window.end,
+      );
+
+      const candidates: { start: Date; end: Date }[] = [];
+      if (dayWindow) {
+        if (dayWindow.start < requestedStart) {
+          candidates.push({ start: dayWindow.start, end: requestedStart });
+        }
+        if (requestedEnd < dayWindow.end) {
+          candidates.push({ start: requestedEnd, end: dayWindow.end });
+        }
+      }
+
+      return { id: request.id, requestedStart, requestedEnd, candidates };
+    })
+    .filter((request) => request.candidates.length > 0);
 
   const cover = property.property_images.find((image) => image.is_cover) ?? property.property_images[0];
   const gallery = property.property_images.filter((image) => image !== cover);
@@ -173,7 +215,55 @@ export default async function ResidenceDetailPage({
       ) : null}
 
       {viewerData.user ? (
-        <BookingForm propertyId={property.id} basePrice={property.base_price} currency={property.currency} />
+        <>
+          <BookingForm propertyId={property.id} basePrice={property.base_price} currency={property.currency} />
+
+          <div className="flex flex-col gap-3">
+            <h2 className="text-sm font-medium text-foreground">Réservation partagée à deux</h2>
+            {joinableRequests.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {joinableRequests.map((request) => (
+                  <li
+                    key={request.id}
+                    className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <span className="text-foreground/80">
+                      Un participant a réservé{" "}
+                      {request.requestedStart.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })} –{" "}
+                      {request.requestedEnd.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {request.candidates.map((candidate) => (
+                        <form
+                          key={candidate.start.toISOString()}
+                          action={joinSharedBooking.bind(
+                            null,
+                            request.id,
+                            candidate.start.toISOString(),
+                            candidate.end.toISOString(),
+                          )}
+                        >
+                          <button
+                            type="submit"
+                            className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                          >
+                            Rejoindre {candidate.start.toLocaleTimeString("fr-FR", { timeStyle: "short" })}–
+                            {candidate.end.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                          </button>
+                        </form>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-foreground/60">
+                Aucune demande de partage en attente pour cette résidence pour le moment.
+              </p>
+            )}
+            <SharedBookingForm propertyId={property.id} basePrice={property.base_price} currency={property.currency} />
+          </div>
+        </>
       ) : (
         <div className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-4 text-sm">
           <p className="text-foreground/80">Connectez-vous pour réserver cette résidence.</p>

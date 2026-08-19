@@ -1102,6 +1102,10 @@ export type Database = {
     }
     Functions: {
       cancel_booking: { Args: { p_booking_id: string }; Returns: undefined }
+      cancel_shared_booking_request: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
       confirm_payment: { Args: { p_payment_id: string }; Returns: undefined }
       create_classic_booking: {
         Args: { p_ends_at: string; p_property_id: string; p_starts_at: string }
@@ -1116,16 +1120,23 @@ export type Database = {
         }
         Returns: string
       }
+      fits_availability_window: {
+        Args: { p_ends_at: string; p_property_id: string; p_starts_at: string }
+        Returns: boolean
+      }
       generate_booking_code: { Args: never; Returns: string }
-      is_admin: { Args: never; Returns: boolean }
-      join_shared_booking_request: {
+      has_overlapping_segment: {
         Args: {
+          p_buffer_minutes?: number
           p_ends_at: string
-          p_price_initiator: number
-          p_price_joiner: number
-          p_request_id: string
+          p_property_id: string
           p_starts_at: string
         }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      join_shared_booking_request: {
+        Args: { p_ends_at: string; p_request_id: string; p_starts_at: string }
         Returns: string
       }
       owns_property: { Args: { p_property_id: string }; Returns: boolean }
