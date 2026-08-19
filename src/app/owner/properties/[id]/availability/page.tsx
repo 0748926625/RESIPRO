@@ -9,7 +9,7 @@ import { addDays, startOfDay } from "@/lib/services/calendar.service";
 import { createClient } from "@/lib/supabase/server";
 import { AVAILABILITY_BLOCK_REASON_LABELS, DAY_OF_WEEK_LABELS } from "@/lib/validations/availability.schema";
 
-import { createBlock, createRule, deleteBlock, deleteRule } from "./actions";
+import { createBlock, createRule, deleteBlock, deleteRule, setQuickBlocks } from "./actions";
 
 const timeFormatter = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
@@ -70,6 +70,7 @@ export default async function PropertyAvailabilityPage({
 
   const boundCreateRule = createRule.bind(null, id);
   const boundCreateBlock = createBlock.bind(null, id);
+  const boundSetQuickBlocks = setQuickBlocks.bind(null, id);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-8">
@@ -138,7 +139,13 @@ export default async function PropertyAvailabilityPage({
             </span>
             <Link href={`${basePath}?view=month&month=${nextMonthParam}`}>Mois suivant →</Link>
           </div>
-          <MonthCalendar month={monthDate} rules={rules} blocks={blocks} basePath={basePath} />
+          <MonthCalendar
+            month={monthDate}
+            rules={rules}
+            blocks={blocks}
+            basePath={basePath}
+            onToggleQuickBlocks={boundSetQuickBlocks}
+          />
         </div>
       )}
 

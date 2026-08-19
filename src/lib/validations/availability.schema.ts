@@ -49,3 +49,8 @@ export const availabilityBlockSchema = z
   });
 
 export type AvailabilityBlockInput = z.infer<typeof availabilityBlockSchema>;
+
+// Marker note distinguishing blocks created by the quick-mark calendar tool (tap/drag a
+// whole day) from ordinary blocks — lets a repeat tap toggle exactly the blocks it made,
+// without touching a maintenance/cleaning block that happens to cover the same day.
+export const QUICK_BLOCK_NOTE = "Marqué occupé (calendrier rapide)";
