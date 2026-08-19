@@ -1153,6 +1153,10 @@ export type Database = {
         Returns: undefined
       }
       resubmit_payment: { Args: { p_payment_id: string }; Returns: undefined }
+      reverse_cash_transaction: {
+        Args: { p_reason?: string; p_transaction_id: string }
+        Returns: string
+      }
       set_property_status: {
         Args: {
           p_allowed_from: Database["public"]["Enums"]["property_status"][]

@@ -59,9 +59,14 @@ export default async function EditPropertyPage({
           <p className="text-sm text-foreground/60">
             Statut : {STATUS_LABELS[property.status] ?? property.status}
           </p>
-          <Link href={`/owner/properties/${id}/availability`} className="text-xs text-foreground underline">
-            Calendrier &amp; disponibilités
-          </Link>
+          <div className="flex gap-3">
+            <Link href={`/owner/properties/${id}/availability`} className="text-xs text-foreground underline">
+              Calendrier &amp; disponibilités
+            </Link>
+            <Link href={`/owner/properties/${id}/finance`} className="text-xs text-foreground underline">
+              Finances
+            </Link>
+          </div>
         </div>
         {canSubmit ? (
           <form action={boundSubmit}>
