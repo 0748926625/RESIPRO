@@ -19,11 +19,11 @@ export async function getViewer(): Promise<Viewer> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, full_name")
+    .select("role, full_name, status")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
+  if (!profile || profile.status === "suspended") {
     return { role: "visitor" };
   }
 

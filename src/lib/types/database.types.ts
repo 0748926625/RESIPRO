@@ -1189,6 +1189,14 @@ export type Database = {
         Args: { p_reason?: string; p_transaction_id: string }
         Returns: string
       }
+      set_owner_verified: {
+        Args: { p_owner_id: string; p_verified: boolean }
+        Returns: undefined
+      }
+      set_profile_status: {
+        Args: { p_new_status: string; p_profile_id: string }
+        Returns: undefined
+      }
       set_property_status: {
         Args: {
           p_allowed_from: Database["public"]["Enums"]["property_status"][]

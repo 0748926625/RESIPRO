@@ -146,3 +146,14 @@ export type CommissionType = (typeof COMMISSION_TYPES)[keyof typeof COMMISSION_T
 // Maximum number of participants in a shared booking (§8, §9 règle 1) — never change
 // without revisiting the DB trigger trg_check_max_segments.
 export const MAX_SHARED_BOOKING_PARTICIPANTS = 2;
+
+export const PROFILE_STATUSES = {
+  ACTIVE: "active",
+  SUSPENDED: "suspended",
+} as const;
+export type ProfileStatus = (typeof PROFILE_STATUSES)[keyof typeof PROFILE_STATUSES];
+
+export const PROFILE_STATUS_LABELS: Record<ProfileStatus, string> = {
+  active: "Actif",
+  suspended: "Suspendu",
+};
