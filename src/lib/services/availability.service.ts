@@ -71,6 +71,10 @@ export function hasAvailability(rules: AvailabilityRule[], blocks: AvailabilityB
   return computeAvailableWindows(rules, blocks, date).length > 0;
 }
 
+export function totalMinutes(windows: TimeWindow[]): number {
+  return windows.reduce((sum, window) => sum + (window.end.getTime() - window.start.getTime()) / 60000, 0);
+}
+
 export type DayClassification = {
   hasRule: boolean;
   isAvailable: boolean;

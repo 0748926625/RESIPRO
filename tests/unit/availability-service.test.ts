@@ -5,6 +5,7 @@ import {
   computeAvailableWindows,
   hasAvailability,
   subtractBlocks,
+  totalMinutes,
   windowsFromRules,
   type AvailabilityRule,
 } from "@/lib/services/availability.service";
@@ -129,5 +130,20 @@ describe("classifyDay", () => {
     const result = classifyDay([wednesdayRule], [otherDayBlock], DATE);
     expect(result.blocksOnDay).toEqual([]);
     expect(result.isAvailable).toBe(true);
+  });
+});
+
+describe("totalMinutes", () => {
+  it("sums the duration of each window in minutes", () => {
+    expect(
+      totalMinutes([
+        { start: at(9), end: at(11) },
+        { start: at(13), end: at(13, 30) },
+      ]),
+    ).toBe(150);
+  });
+
+  it("returns 0 for no windows", () => {
+    expect(totalMinutes([])).toBe(0);
   });
 });
