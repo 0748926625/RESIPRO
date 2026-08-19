@@ -133,9 +133,23 @@ Nom, logo, couleurs, contact, opérateur/numéro Mobile Money et commission sont
 dans la table `platform_settings` (clé/valeur), modifiables par le Super Admin — jamais
 codés en dur dans l'application (§31, §32).
 
+## PWA
+
+`src/app/manifest.ts` et `public/sw.js` rendent l'app installable (icônes générées via
+`next/og`, aucun fichier image à maintenir). Le service worker ne met en cache que les
+fichiers statiques `_next/static/*` et une page `/offline` de secours pour la navigation
+— jamais les données de réservation, paiement ou disponibilité, qui doivent toujours
+venir du serveur (§26, §40). Pour tester l'installation, lancez `npm run build && npm run
+start` (le service worker ne s'enregistre pas correctement en mode `next dev`), ouvrez le
+site dans Chrome/Edge et utilisez « Installer l'application ».
+
 ## État d'avancement
 
-Voir les phases du cahier des charges (§48). Actuellement : **Phase 1** (scaffold +
-configuration) et début de **Phase 2** (schéma Supabase, RLS, fonctions RPC critiques).
-Aucune UI applicative, aucune authentification réelle, aucun service worker
-fonctionnel : chaque page de rôle est un placeholder explicite en attendant sa phase.
+Voir les phases du cahier des charges (§48). Phases 1 à 11, 13 et 14 sont implémentées et
+vérifiées contre le projet Supabase réel : authentification, gestion des résidences,
+disponibilités/calendrier, réservation classique et partagée, paiements Mobile Money
+manuels, intermédiation, caisse/revenus/dépenses, tableaux de bord, notifications, et PWA
+installable (manifest, icônes générées, service worker à stratégie de cache limitée —
+voir `public/sw.js`). Restent : Phase 12 (états financiers consolidés multi-résidences —
+actuellement disponibles par résidence), Phase 16 (durcissement sécurité/tests/
+performance) et Phase 17 (déploiement).
