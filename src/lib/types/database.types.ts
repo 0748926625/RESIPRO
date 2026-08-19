@@ -1115,6 +1115,17 @@ export type Database = {
         Args: { p_ends_at: string; p_property_id: string; p_starts_at: string }
         Returns: string
       }
+      create_notification: {
+        Args: {
+          p_body?: string
+          p_entity_id?: string
+          p_entity_type?: string
+          p_profile_id: string
+          p_title: string
+          p_type: string
+        }
+        Returns: undefined
+      }
       create_shared_booking_request: {
         Args: {
           p_ends_at: string
@@ -1142,6 +1153,27 @@ export type Database = {
       join_shared_booking_request: {
         Args: { p_ends_at: string; p_request_id: string; p_starts_at: string }
         Returns: string
+      }
+      notify_admins: {
+        Args: {
+          p_body?: string
+          p_entity_id?: string
+          p_entity_type?: string
+          p_title: string
+          p_type: string
+        }
+        Returns: undefined
+      }
+      notify_property_owner: {
+        Args: {
+          p_body?: string
+          p_entity_id?: string
+          p_entity_type?: string
+          p_property_id: string
+          p_title: string
+          p_type: string
+        }
+        Returns: undefined
       }
       owner_confirm_booking: {
         Args: { p_booking_id: string }
