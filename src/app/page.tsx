@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { SearchForm } from "@/components/marketplace/search-form";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,6 +16,14 @@ export default async function HomePage() {
         </p>
       </div>
       <SearchForm amenities={amenities ?? []} defaultValues={{}} />
+
+      <p className="text-center text-sm text-foreground/60">
+        Vous ne trouvez pas ce qu&apos;il vous faut ?{" "}
+        <Link href="/intermediation" className="underline">
+          Faites une demande personnalisée
+        </Link>
+        .
+      </p>
     </div>
   );
 }

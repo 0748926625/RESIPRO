@@ -111,6 +111,16 @@ export const INTERMEDIATION_STATUSES = {
 export type IntermediationStatus =
   (typeof INTERMEDIATION_STATUSES)[keyof typeof INTERMEDIATION_STATUSES];
 
+export const INTERMEDIATION_STATUS_LABELS: Record<IntermediationStatus, string> = {
+  new: "Nouvelle demande",
+  contacted: "Client contacté",
+  residence_found: "Résidence proposée",
+  client_referred: "Client mis en relation",
+  reservation_created: "Réservation créée",
+  completed: "Terminée",
+  cancelled: "Annulée",
+};
+
 export const CASH_TRANSACTION_TYPES = {
   IN: "in",
   OUT: "out",
