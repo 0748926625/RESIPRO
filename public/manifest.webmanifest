@@ -1,0 +1,11 @@
+{
+  "name": "Residence Pro",
+  "short_name": "ResidencePro",
+  "description": "Gestion de résidences meublées et marketplace de réservation partagée.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f766e",
+  "lang": "fr",
+  "icons": []
+}

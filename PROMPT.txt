@@ -1,0 +1,1464 @@
+# PROJET : PWA DE GESTION DE RÉSIDENCES MEUBLÉES + MARKETPLACE + RÉSERVATION PARTAGÉE
+
+Tu es un ingénieur logiciel senior spécialisé en architecture full-stack, React/Next.js, TypeScript, Supabase/PostgreSQL, PWA, sécurité et conception de produits SaaS.
+
+Ta mission est de concevoir et développer une application web progressive (PWA), moderne, professionnelle, mobile-first et prête à évoluer, destinée au marché des résidences meublées.
+
+Le projet possède deux dimensions complémentaires :
+
+1. Un logiciel professionnel permettant aux propriétaires/gérants de gérer leurs résidences.
+2. Une marketplace permettant aux clients de rechercher et réserver des résidences, avec un système original de réservation partagée par créneaux.
+
+Le projet doit être développé avec une architecture propre, sécurisée, maintenable et évolutive.
+
+---
+
+# 1. STACK TECHNIQUE
+
+Utiliser de préférence :
+
+* Next.js avec TypeScript
+* React
+* Tailwind CSS
+* Supabase
+
+  * PostgreSQL
+  * Supabase Auth
+  * Supabase Storage
+  * Supabase Realtime lorsque pertinent
+  * Row Level Security (RLS)
+* GitHub pour le versionnement
+* PWA installable sur mobile
+* Architecture responsive mobile-first
+
+Avant de commencer à coder, inspecte le projet existant.
+
+Si le projet est vide, initialise proprement l'application.
+
+Ne détruis jamais du code existant sans raison.
+
+Si une décision technique importante est nécessaire, privilégie la solution la plus simple, robuste et maintenable.
+
+---
+
+# 2. RÈGLE ABSOLUE : COMMENCER PAR L'ARCHITECTURE
+
+NE COMMENCE PAS immédiatement par créer toutes les pages.
+
+Commence par :
+
+1. analyser le projet ;
+2. définir l'architecture ;
+3. définir les rôles utilisateurs ;
+4. définir le modèle de données ;
+5. définir les relations PostgreSQL ;
+6. définir les règles métier ;
+7. définir les politiques RLS ;
+8. définir les workflows ;
+9. définir les routes/pages ;
+10. définir les composants principaux ;
+11. définir les statuts ;
+12. définir les tests nécessaires.
+
+Présente d'abord un plan d'implémentation structuré.
+
+Ensuite, implémente progressivement.
+
+---
+
+# 3. NOM TEMPORAIRE DU PRODUIT
+
+Utiliser temporairement le nom :
+
+RESIDENCE PRO
+
+Le nom doit être facilement modifiable plus tard.
+
+Prévoir une architecture permettant de modifier :
+
+* nom de la plateforme ;
+* logo ;
+* couleurs ;
+* informations de contact ;
+* numéro Mobile Money ;
+* commission ;
+* paramètres généraux.
+
+---
+
+# 4. TYPES D'UTILISATEURS
+
+Le système doit prévoir au minimum quatre niveaux.
+
+## A. SUPER ADMIN
+
+Le Super Admin est l'administrateur de la plateforme.
+
+Il peut :
+
+* gérer les utilisateurs ;
+* gérer les propriétaires/gérants ;
+* gérer les clients ;
+* gérer les résidences ;
+* valider/refuser les résidences ;
+* voir toutes les réservations ;
+* gérer les demandes de réservation ;
+* gérer les réservations partagées ;
+* confirmer les paiements ;
+* gérer les demandes d'intermédiation ;
+* consulter les finances de la plateforme ;
+* gérer les paramètres Mobile Money ;
+* gérer les commissions ;
+* contacter les propriétaires/gérants ;
+* accéder aux statistiques globales ;
+* gérer les litiges ;
+* suspendre un utilisateur ;
+* suspendre une résidence ;
+* consulter les logs importants.
+
+## B. PROPRIÉTAIRE / GÉRANT
+
+Un propriétaire/gérant peut :
+
+* créer son profil ;
+* enregistrer ses résidences ;
+* ajouter les photos ;
+* renseigner les équipements ;
+* définir les tarifs ;
+* définir les horaires ;
+* définir les disponibilités ;
+* gérer son calendrier ;
+* voir les réservations ;
+* voir les clients liés à ses réservations ;
+* gérer les charges ;
+* gérer les dépenses ;
+* gérer la caisse ;
+* enregistrer les revenus ;
+* consulter les états financiers ;
+* consulter les statistiques ;
+* gérer éventuellement plusieurs résidences.
+
+Un propriétaire ne doit voir que ses propres données.
+
+## C. CLIENT
+
+Un client peut :
+
+* créer un compte ;
+* rechercher des résidences ;
+* filtrer les résultats ;
+* consulter les détails ;
+* consulter les disponibilités ;
+* demander une réservation classique ;
+* rechercher/rejoindre une réservation partagée ;
+* créer une demande de partage ;
+* payer sa part ;
+* voir ses réservations ;
+* voir ses paiements ;
+* consulter les informations qui lui sont autorisées ;
+* contacter la plateforme.
+
+## D. VISITEUR
+
+Un visiteur non connecté peut :
+
+* consulter les résidences publiques ;
+* effectuer des recherches ;
+* consulter les détails publics ;
+* voir les disponibilités publiques selon les règles définies ;
+* demander à devenir client.
+
+---
+
+# 5. MODULE MARKETPLACE
+
+Créer une marketplace moderne permettant de rechercher facilement une résidence meublée.
+
+La page d'accueil doit permettre :
+
+* recherche par ville/quartier ;
+* date ;
+* heure d'arrivée ;
+* heure de départ ;
+* nombre de personnes ;
+* budget ;
+* équipements ;
+* type de résidence.
+
+Exemples d'équipements :
+
+* Wi-Fi
+* climatisation
+* télévision
+* cuisine
+* parking
+* piscine
+* groupe électrogène
+* eau chaude
+* sécurité
+* etc.
+
+Les filtres doivent être facilement extensibles.
+
+---
+
+# 6. FICHE D'UNE RÉSIDENCE
+
+Chaque résidence doit avoir une fiche professionnelle comprenant :
+
+* nom ;
+* description ;
+* photos ;
+* localisation ;
+* quartier ;
+* équipements ;
+* nombre de chambres ;
+* capacité ;
+* tarifs ;
+* horaires ;
+* règles ;
+* informations importantes ;
+* disponibilité ;
+* statut.
+
+Prévoir plusieurs niveaux de visibilité pour protéger les informations sensibles.
+
+Le numéro personnel du gérant ne doit PAS être automatiquement exposé à tout le monde.
+
+Le Super Admin doit pouvoir décider quand les coordonnées sont communiquées.
+
+---
+
+# 7. RÉSERVATION CLASSIQUE
+
+Une réservation classique concerne un seul client.
+
+Exemple :
+
+Client :
+
+13h → 21h
+
+Le système doit vérifier :
+
+* disponibilité ;
+* absence de conflit ;
+* horaires autorisés ;
+* éventuel délai de préparation/nettoyage ;
+* tarif ;
+* statut de la résidence.
+
+Statuts possibles :
+
+* draft
+* pending
+* awaiting_payment
+* payment_received
+* awaiting_owner_confirmation
+* confirmed
+* checked_in
+* checked_out
+* completed
+* cancelled
+* rejected
+* expired
+
+Les statuts doivent être centralisés dans le code.
+
+---
+
+# 8. FONCTION PRINCIPALE : RÉSERVATION PARTAGÉE
+
+C'est une fonctionnalité centrale du produit.
+
+IMPORTANT :
+
+Une réservation partagée accepte au maximum DEUX personnes.
+
+Ne jamais permettre trois personnes dans une réservation partagée.
+
+## Exemple
+
+Une résidence est disponible :
+
+13h → 21h
+
+Client A veut :
+
+13h → 17h
+
+Client B peut rejoindre la réservation pour :
+
+17h → 21h
+
+La réservation devient :
+
+13h ───────── 17h ───────── 21h
+Client A                Client B
+
+---
+
+# 9. RÈGLES DE LA RÉSERVATION PARTAGÉE
+
+Implémenter strictement les règles suivantes.
+
+### Règle 1
+
+Maximum 2 participants.
+
+### Règle 2
+
+Les créneaux des deux participants doivent être consécutifs.
+
+### Règle 3
+
+Les créneaux ne doivent jamais se chevaucher.
+
+### Règle 4
+
+Un créneau partagé doit respecter les horaires autorisés de la résidence.
+
+### Règle 5
+
+Le système doit empêcher deux réservations concurrentes sur le même créneau.
+
+Utiliser les mécanismes PostgreSQL appropriés pour éviter les race conditions.
+
+Ne pas se contenter d'une simple vérification frontend.
+
+### Règle 6
+
+Le premier occupant doit libérer la résidence à la fin de son créneau et effectuer les actions prévues pour préparer la résidence pour le deuxième occupant.
+
+Cette règle doit être clairement affichée aux utilisateurs.
+
+Prévoir éventuellement une confirmation de départ.
+
+### Règle 7
+
+Chaque participant paie sa propre part.
+
+### Règle 8
+
+La réservation partagée n'est considérée comme financièrement complète que lorsque les paiements requis ont été reçus et confirmés.
+
+### Règle 9
+
+Le Super Admin est l'intermédiaire financier dans le MVP.
+
+---
+
+# 10. WORKFLOW D'UNE RÉSERVATION PARTAGÉE
+
+Exemple :
+
+Client A veut 13h → 17h.
+
+Il crée une demande de partage.
+
+La plateforme affiche :
+
+"Recherche d'un deuxième participant."
+
+Un autre client B peut découvrir cette demande.
+
+B choisit 17h → 21h.
+
+La plateforme vérifie :
+
+* même résidence ;
+* même date ;
+* créneaux consécutifs ;
+* absence de conflit ;
+* maximum deux participants.
+
+Si tout est valide :
+
+Créer la réservation partagée.
+
+---
+
+# 11. PAIEMENT DES RÉSERVATIONS PARTAGÉES
+
+IMPORTANT :
+
+Dans le MVP, ne pas intégrer immédiatement un paiement Mobile Money automatique.
+
+Le paiement est manuel.
+
+Le Super Admin configure dans l'administration :
+
+* opérateur Mobile Money ;
+* numéro ;
+* nom du bénéficiaire ;
+* instructions de paiement.
+
+Exemple :
+
+"Envoyez votre paiement au numéro Mobile Money suivant : XXXXXXXX"
+
+Chaque participant reçoit une référence unique.
+
+Exemple :
+
+RES-2026-00125-A
+
+RES-2026-00125-B
+
+---
+
+# 12. CONFIRMATION MANUELLE DU PAIEMENT
+
+Le client indique :
+
+"J'ai effectué le paiement."
+
+Le paiement passe à :
+
+payment_submitted
+
+Le Super Admin vérifie la réception sur son compte Mobile Money.
+
+Il peut ensuite cliquer :
+
+"Confirmer le paiement"
+
+Le paiement devient :
+
+payment_confirmed
+
+Chaque paiement doit être enregistré séparément.
+
+Exemple :
+
+Réservation 1254
+
+Participant A :
+10 000 FCFA
+statut : confirmé
+
+Participant B :
+10 000 FCFA
+statut : en attente
+
+La réservation ne peut pas passer à l'étape suivante tant que les paiements requis ne sont pas confirmés.
+
+---
+
+# 13. RÉSERVATION AUPRÈS DU PROPRIÉTAIRE
+
+IMPORTANT :
+
+Le Super Admin ne doit effectuer/réserver auprès du propriétaire qu'après réception des paiements requis.
+
+Workflow :
+
+DEMANDE
+↓
+PARTENAIRE TROUVÉ
+↓
+PAIEMENTS DEMANDÉS
+↓
+PAIEMENT A CONFIRMÉ
+↓
+PAIEMENT B CONFIRMÉ
+↓
+PAIEMENT COMPLET
+↓
+SUPER ADMIN CONTACTE/RÉSERVE AUPRÈS DU GÉRANT
+↓
+ATTENTE CONFIRMATION GÉRANT
+↓
+RÉSERVATION CONFIRMÉE
+
+Le système doit clairement afficher cette distinction.
+
+"Paiement reçu" ne signifie PAS automatiquement "résidence réservée".
+
+---
+
+# 14. CAS D'UN SEUL CLIENT
+
+Il doit également être possible de faire une réservation classique.
+
+Exemple :
+
+Client :
+13h → 21h
+
+Le client peut effectuer la demande directement.
+
+Selon la configuration du Super Admin :
+
+* paiement à la plateforme ;
+* ou demande d'intermédiation ;
+* puis réservation auprès du propriétaire.
+
+Le système doit supporter les deux cas.
+
+---
+
+# 15. SERVICE D'INTERMÉDIATION
+
+Créer un module spécifique permettant au Super Admin de recevoir les demandes clients.
+
+Exemple :
+
+Client :
+
+"Je cherche une résidence à Cocody pour 14h à 22h."
+
+Le Super Admin reçoit :
+
+* nom ;
+* téléphone ;
+* date ;
+* heure ;
+* budget ;
+* nombre de personnes ;
+* préférences ;
+* commentaires.
+
+Le Super Admin peut :
+
+* rechercher une résidence ;
+* proposer une résidence ;
+* contacter le gérant ;
+* communiquer le numéro du gérant au client lorsque nécessaire ;
+* transformer la demande en réservation.
+
+Statuts :
+
+* new
+* contacted
+* residence_found
+* client_referred
+* reservation_created
+* completed
+* cancelled
+
+---
+
+# 16. MODULE PROPRIÉTAIRE
+
+Créer un dashboard professionnel.
+
+Indicateurs :
+
+* chiffre d'affaires ;
+* revenus du jour ;
+* revenus du mois ;
+* nombre de réservations ;
+* taux d'occupation ;
+* dépenses ;
+* charges ;
+* bénéfice estimé ;
+* caisse ;
+* réservations à venir.
+
+---
+
+# 17. CALENDRIER
+
+Créer un calendrier moderne.
+
+Vues :
+
+* jour ;
+* semaine ;
+* mois.
+
+Afficher :
+
+* réservations ;
+* créneaux ;
+* disponibilités ;
+* blocages ;
+* maintenance ;
+* nettoyage/préparation ;
+* réservations partagées.
+
+Utiliser des couleurs différentes selon les statuts.
+
+Une réservation partagée doit visuellement montrer les deux segments.
+
+---
+
+# 18. GESTION FINANCIÈRE
+
+Créer un module financier pour les propriétaires.
+
+Prévoir :
+
+## Revenus
+
+* réservation ;
+* paiement ;
+* autres revenus.
+
+## Dépenses
+
+* électricité ;
+* eau ;
+* internet ;
+* nettoyage ;
+* entretien ;
+* réparation ;
+* personnel ;
+* commissions ;
+* fournitures ;
+* autres.
+
+## Charges récurrentes
+
+Permettre de définir :
+
+* libellé ;
+* montant ;
+* fréquence ;
+* date ;
+* résidence concernée.
+
+---
+
+# 19. CAISSE
+
+Créer un module caisse.
+
+Fonctionnalités :
+
+* entrée d'argent ;
+* sortie d'argent ;
+* motif ;
+* montant ;
+* date ;
+* utilisateur ;
+* résidence ;
+* solde.
+
+Ne jamais supprimer silencieusement une opération financière.
+
+Utiliser plutôt :
+
+* annulation ;
+* correction ;
+* opération inverse ;
+* journal d'audit.
+
+---
+
+# 20. ÉTATS FINANCIERS
+
+Prévoir :
+
+* chiffre d'affaires ;
+* dépenses ;
+* charges ;
+* bénéfice ;
+* trésorerie ;
+* revenus par résidence ;
+* revenus par période ;
+* dépenses par catégorie.
+
+Filtres :
+
+* aujourd'hui ;
+* cette semaine ;
+* ce mois ;
+* mois précédent ;
+* année ;
+* période personnalisée.
+
+---
+
+# 21. TABLEAU DE BORD SUPER ADMIN
+
+Le Super Admin doit avoir une vue globale.
+
+Afficher notamment :
+
+* nombre de propriétaires ;
+* nombre de résidences ;
+* nombre de clients ;
+* réservations du jour ;
+* réservations à venir ;
+* réservations partagées ;
+* paiements en attente de confirmation ;
+* paiements confirmés ;
+* demandes d'intermédiation ;
+* chiffre d'affaires plateforme ;
+* commissions ;
+* résidences actives ;
+* résidences suspendues.
+
+Créer des alertes :
+
+* paiement à vérifier ;
+* réservation à confirmer ;
+* demande urgente ;
+* conflit ;
+* réservation expirée.
+
+---
+
+# 22. MODÈLE DE DONNÉES SUPABASE
+
+Concevoir un modèle relationnel propre.
+
+Prévoir notamment des tables similaires à :
+
+* profiles
+* roles
+* owners
+* clients
+* properties
+* property_images
+* property_amenities
+* amenities
+* availability_rules
+* availability_blocks
+* bookings
+* booking_segments
+* booking_participants
+* shared_booking_requests
+* payments
+* payment_methods
+* expenses
+* expense_categories
+* income_transactions
+* cash_transactions
+* financial_periods
+* intermediation_requests
+* notifications
+* audit_logs
+* platform_settings
+
+Tu peux modifier cette liste si une meilleure architecture relationnelle est nécessaire.
+
+IMPORTANT :
+
+Ne crée pas de données redondantes inutilement.
+
+Utilise les clés étrangères.
+
+Ajoute les index nécessaires.
+
+Utilise des contraintes PostgreSQL pour protéger l'intégrité.
+
+---
+
+# 23. BOOKING SEGMENTS
+
+La réservation doit être conçue de manière suffisamment flexible.
+
+Même si le produit limite actuellement une réservation partagée à deux personnes, le modèle doit représenter les créneaux séparément.
+
+Exemple :
+
+booking
+↓
+segment 1
+participant A
+13:00 → 17:00
+
+segment 2
+participant B
+17:00 → 21:00
+
+La règle applicative impose actuellement :
+
+MAX 2 SEGMENTS / PARTICIPANTS pour une réservation partagée.
+
+---
+
+# 24. SÉCURITÉ SUPABASE
+
+La sécurité est prioritaire.
+
+Mettre en place Row Level Security sur toutes les tables sensibles.
+
+Exemples :
+
+Un propriétaire ne doit pouvoir voir/modifier que :
+
+* son profil ;
+* ses résidences ;
+* ses réservations ;
+* ses finances ;
+* ses clients liés à ses réservations.
+
+Un client ne doit voir que :
+
+* ses données ;
+* ses réservations ;
+* ses paiements ;
+* les informations publiques des résidences.
+
+Le Super Admin peut accéder aux données globales.
+
+Ne jamais mettre une clé secrète Supabase côté client.
+
+---
+
+# 25. AUTHENTIFICATION
+
+Prévoir :
+
+* inscription ;
+* connexion ;
+* déconnexion ;
+* récupération de mot de passe ;
+* vérification email si activée ;
+* gestion de session ;
+* protection des routes ;
+* redirection selon le rôle.
+
+Prévoir une architecture permettant d'ajouter plus tard :
+
+* téléphone ;
+* OTP ;
+* Google ;
+* Apple ;
+* autres moyens d'authentification.
+
+---
+
+# 26. PWA
+
+L'application doit être réellement installable.
+
+Prévoir :
+
+* manifest ;
+* icônes ;
+* splash ;
+* responsive design ;
+* service worker ;
+* stratégie de cache appropriée ;
+* comportement correct sur Android/iOS/Desktop.
+
+Ne pas prétendre fournir un mode offline complet si les fonctionnalités nécessitent une connexion.
+
+Les données critiques comme :
+
+* réservation ;
+* paiement ;
+* disponibilité ;
+
+doivent toujours être validées côté serveur.
+
+---
+
+# 27. INTERFACE UTILISATEUR
+
+Design professionnel.
+
+Style :
+
+* moderne ;
+* simple ;
+* élégant ;
+* très lisible ;
+* mobile-first ;
+* adapté à l'Afrique de l'Ouest ;
+* performant sur des connexions mobiles moyennes.
+
+Prévoir :
+
+* navigation mobile ;
+* dashboard ;
+* cartes ;
+* tableaux ;
+* calendrier ;
+* filtres ;
+* modales ;
+* notifications ;
+* états de chargement ;
+* messages d'erreur ;
+* empty states.
+
+Ne pas construire une interface uniquement esthétique.
+
+Chaque écran doit être fonctionnel.
+
+---
+
+# 28. MOBILE
+
+La majorité des utilisateurs peuvent utiliser un smartphone.
+
+Priorité absolue :
+
+* boutons suffisamment grands ;
+* formulaires courts ;
+* navigation simple ;
+* chargement rapide ;
+* images optimisées ;
+* calendrier utilisable sur petit écran ;
+* tableaux transformés intelligemment sur mobile.
+
+---
+
+# 29. NOTIFICATIONS
+
+Créer une architecture de notifications.
+
+Types :
+
+* nouvelle demande ;
+* partenaire trouvé ;
+* paiement demandé ;
+* paiement reçu ;
+* paiement confirmé ;
+* réservation confirmée ;
+* réservation annulée ;
+* rappel avant réservation ;
+* changement de statut.
+
+Prévoir une table notifications.
+
+---
+
+# 30. JOURNAL D'AUDIT
+
+Les actions sensibles doivent être enregistrées.
+
+Exemples :
+
+* changement de prix ;
+* confirmation de paiement ;
+* annulation ;
+* création d'une réservation ;
+* modification d'une réservation ;
+* validation d'une résidence ;
+* changement du numéro Mobile Money ;
+* modification financière.
+
+Conserver :
+
+* utilisateur ;
+* action ;
+* date ;
+* entité ;
+* ancienne valeur si pertinent ;
+* nouvelle valeur si pertinent.
+
+---
+
+# 31. NUMÉRO MOBILE MONEY
+
+Le numéro Mobile Money doit être une configuration de plateforme.
+
+Ne jamais le coder en dur.
+
+Prévoir :
+
+platform_settings
+
+Exemple :
+
+payment_operator
+payment_phone
+payment_recipient_name
+payment_instructions
+
+Le Super Admin doit pouvoir modifier ces informations.
+
+---
+
+# 32. COMMISSIONS
+
+Prévoir dès maintenant la possibilité de configurer :
+
+* commission fixe ;
+* commission en pourcentage ;
+* commission par réservation ;
+* commission plateforme.
+
+Même si la fonctionnalité n'est pas entièrement utilisée dans le MVP.
+
+---
+
+# 33. GESTION DES CONFLITS DE RÉSERVATION
+
+C'est une fonctionnalité critique.
+
+Deux utilisateurs peuvent tenter de réserver le même créneau simultanément.
+
+Le système doit être protégé contre :
+
+* double réservation ;
+* race condition ;
+* réservation expirée ;
+* paiement tardif ;
+* partenaire qui disparaît ;
+* annulation.
+
+La logique finale doit être validée côté serveur/PostgreSQL.
+
+Ne jamais faire confiance uniquement au frontend.
+
+---
+
+# 34. EXPIRATION DES DEMANDES
+
+Prévoir une durée d'expiration pour :
+
+* demandes de partage ;
+* demandes de réservation ;
+* paiements en attente ;
+* demandes de confirmation.
+
+Les délais doivent être configurables.
+
+Exemple :
+
+Une demande de partage peut expirer automatiquement après X heures.
+
+---
+
+# 35. CAS D'ANNULATION
+
+Prévoir les cas :
+
+### A annule avant que B rejoigne
+
+La demande est annulée.
+
+### B rejoint puis A annule
+
+Le système doit gérer le statut du participant B.
+
+### A paie mais B ne paie pas
+
+La réservation reste incomplète jusqu'à expiration.
+
+Le Super Admin doit pouvoir intervenir manuellement.
+
+### Les deux ont payé mais le propriétaire refuse
+
+Le Super Admin doit pouvoir :
+
+* annuler ;
+* proposer une autre résidence ;
+* enregistrer un remboursement à effectuer ;
+* enregistrer la situation financière.
+
+Ne pas implémenter un faux remboursement automatique si aucun moyen de paiement automatisé n'est connecté.
+
+---
+
+# 36. IMPORTANT : PAS DE FAUSSE AUTOMATISATION
+
+Le MVP doit distinguer clairement :
+
+AUTOMATIQUE :
+
+* calcul ;
+* vérification disponibilité ;
+* gestion des créneaux ;
+* statuts ;
+* notifications internes ;
+* calcul financier.
+
+MANUEL :
+
+* vérification du paiement Mobile Money ;
+* contact propriétaire ;
+* confirmation propriétaire ;
+* remboursement éventuel.
+
+Ne jamais simuler une intégration Mobile Money inexistante.
+
+---
+
+# 37. ADMINISTRATION DES RÉSIDENCES
+
+Une résidence peut avoir les statuts :
+
+* draft
+* pending_review
+* approved
+* rejected
+* suspended
+* archived
+
+Une résidence non approuvée ne doit pas apparaître publiquement.
+
+---
+
+# 38. DONNÉES DE TEST
+
+Créer des données de démonstration réalistes.
+
+Prévoir :
+
+* plusieurs propriétaires ;
+* plusieurs résidences ;
+* plusieurs clients ;
+* réservations classiques ;
+* réservations partagées ;
+* paiements ;
+* dépenses ;
+* revenus ;
+* demandes d'intermédiation.
+
+Mais séparer clairement les données de test de la production.
+
+---
+
+# 39. TESTS
+
+Créer des tests pour les fonctionnalités critiques.
+
+Priorité :
+
+1. disponibilité ;
+2. réservation ;
+3. réservation partagée ;
+4. maximum deux participants ;
+5. absence de chevauchement ;
+6. paiement ;
+7. confirmation paiement ;
+8. permissions ;
+9. RLS ;
+10. calcul financier.
+
+Tester notamment :
+
+A 13h → 17h
+B 17h → 21h
+
+=> valide.
+
+A 13h → 18h
+B 17h → 21h
+
+=> invalide.
+
+A 13h → 17h
+B 18h → 21h
+
+=> selon la configuration du temps de transition, invalide ou nécessite un gap explicite.
+
+A 13h → 21h
+B 13h → 17h
+
+=> invalide car chevauchement.
+
+A 13h → 17h
+B 17h → 21h
+C 21h → 23h
+
+=> C ne doit pas être ajouté à la réservation partagée si la règle du produit interdit plus de deux participants.
+
+---
+
+# 40. ARCHITECTURE DU CODE
+
+Organiser le projet proprement.
+
+Séparer :
+
+* UI ;
+* logique métier ;
+* accès données ;
+* validations ;
+* services ;
+* types ;
+* hooks ;
+* utilitaires ;
+* permissions.
+
+Ne pas mettre toute la logique dans les composants React.
+
+Créer des fonctions métier testables.
+
+---
+
+# 41. VALIDATION
+
+Utiliser une solution robuste de validation des formulaires, par exemple Zod.
+
+Valider côté :
+
+* frontend ;
+* serveur.
+
+Le frontend ne doit jamais être considéré comme une couche de sécurité.
+
+---
+
+# 42. GESTION DES ERREURS
+
+Créer des erreurs utilisateur compréhensibles.
+
+Exemples :
+
+"Cette résidence vient d'être réservée par un autre utilisateur."
+
+"Le créneau sélectionné n'est plus disponible."
+
+"Le paiement n'a pas encore été confirmé."
+
+"Cette réservation nécessite encore un deuxième participant."
+
+---
+
+# 43. SEO
+
+Les pages publiques des résidences doivent être optimisées pour le référencement.
+
+Prévoir :
+
+* metadata ;
+* Open Graph ;
+* URLs propres ;
+* pages indexables ;
+* sitemap si pertinent.
+
+---
+
+# 44. PERFORMANCE
+
+Optimiser :
+
+* images ;
+* requêtes Supabase ;
+* pagination ;
+* chargement des dashboards ;
+* cache lorsque pertinent ;
+* bundle JavaScript.
+
+Ne pas charger inutilement toutes les réservations d'une résidence.
+
+---
+
+# 45. VARIABLES D'ENVIRONNEMENT
+
+Créer :
+
+.env.example
+
+Ne jamais mettre de secrets dans GitHub.
+
+Documenter clairement les variables nécessaires.
+
+---
+
+# 46. GIT / GITHUB
+
+Organiser le développement avec des commits propres.
+
+Exemples :
+
+feat: add property management
+feat: add booking engine
+feat: add shared booking
+feat: add payments
+feat: add financial dashboard
+fix: prevent overlapping bookings
+
+Ne pas faire un énorme commit contenant tout le projet si cela peut être évité.
+
+---
+
+# 47. README
+
+Créer un README complet comprenant :
+
+* présentation ;
+* architecture ;
+* installation ;
+* variables d'environnement ;
+* configuration Supabase ;
+* migrations ;
+* seed ;
+* lancement local ;
+* tests ;
+* build ;
+* déploiement ;
+* gestion des rôles ;
+* règles de réservation partagée.
+
+---
+
+# 48. ORDRE D'IMPLÉMENTATION
+
+Développer dans cet ordre :
+
+PHASE 1
+Architecture + configuration
+
+PHASE 2
+Supabase + migrations + Auth + rôles + RLS
+
+PHASE 3
+Profils utilisateurs
+
+PHASE 4
+Gestion des propriétaires
+
+PHASE 5
+Gestion des résidences
+
+PHASE 6
+Disponibilités + calendrier
+
+PHASE 7
+Moteur de réservation classique
+
+PHASE 8
+Moteur de réservation partagée
+
+PHASE 9
+Paiements manuels Mobile Money
+
+PHASE 10
+Intermédiation Super Admin
+
+PHASE 11
+Caisse + revenus + dépenses
+
+PHASE 12
+États financiers
+
+PHASE 13
+Dashboards
+
+PHASE 14
+Notifications
+
+PHASE 15
+PWA
+
+PHASE 16
+Tests + sécurité + optimisation
+
+PHASE 17
+README + déploiement
+
+---
+
+# 49. APPROCHE DE DÉVELOPPEMENT
+
+Pour chaque phase :
+
+1. expliquer brièvement ce qui va être construit ;
+2. implémenter ;
+3. vérifier les erreurs TypeScript ;
+4. vérifier les erreurs de build ;
+5. vérifier les migrations ;
+6. tester les fonctionnalités ;
+7. corriger les problèmes ;
+8. seulement ensuite passer à la phase suivante.
+
+Ne jamais déclarer une fonctionnalité terminée sans la vérifier.
+
+---
+
+# 50. PRIORITÉ ABSOLUE DU PROJET
+
+Les trois éléments les plus importants sont :
+
+1. FIABILITÉ DES DISPONIBILITÉS
+2. FIABILITÉ DU MOTEUR DE RÉSERVATION
+3. FIABILITÉ DU SYSTÈME DE RÉSERVATION PARTAGÉE + PAIEMENT
+
+L'interface est importante, mais elle ne doit jamais être priorisée au détriment de la logique métier.
+
+---
+
+# 51. RÈGLE FONDAMENTALE DU PRODUIT
+
+Toujours garder en tête ce workflow réel :
+
+CLIENT
+↓
+cherche une résidence
+↓
+choisit une date et un créneau
+↓
+réservation classique OU partage
+↓
+si partage : maximum 2 personnes
+↓
+les deux paient leur part
+↓
+le Super Admin vérifie les paiements Mobile Money
+↓
+paiement complet
+↓
+le Super Admin réserve auprès du propriétaire
+↓
+le propriétaire confirme
+↓
+la réservation devient confirmée
+↓
+les clients utilisent leurs créneaux respectifs
+
+Le système doit refléter exactement ce fonctionnement.
+
+---
+
+# 52. OBJECTIF FINAL
+
+Construire une première version réellement utilisable, et pas uniquement une démonstration visuelle.
+
+À la fin, je veux avoir :
+
+* une PWA fonctionnelle ;
+* authentification ;
+* rôles ;
+* Supabase ;
+* RLS ;
+* gestion des résidences ;
+* marketplace ;
+* calendrier ;
+* réservations ;
+* réservations partagées à deux maximum ;
+* paiements manuels Mobile Money ;
+* gestion Super Admin ;
+* intermédiation ;
+* caisse ;
+* charges ;
+* dépenses ;
+* revenus ;
+* états financiers ;
+* dashboards ;
+* notifications ;
+* audit ;
+* tests ;
+* documentation.
+
+---
+
+# 53. CONSIGNE FINALE À CLAUDE CODE
+
+Avant toute modification importante, inspecte le code existant.
+
+Ne suppose jamais qu'une fonctionnalité existe.
+
+Ne simule jamais une fonctionnalité non implémentée.
+
+Ne mets jamais de données sensibles en dur.
+
+Ne contourne jamais les règles RLS pour simplifier le développement.
+
+Ne fais jamais confiance au frontend pour la sécurité ou la disponibilité.
+
+Toutes les opérations critiques doivent être validées côté serveur/base de données.
+
+Si une décision métier n'est pas suffisamment définie, signale-la avant de l'implémenter et propose la solution la plus cohérente.
+
+Commence maintenant par analyser le repository et produire :
+
+1. l'architecture proposée ;
+2. l'arborescence du projet ;
+3. le schéma de données ;
+4. les rôles et permissions ;
+5. les principaux workflows ;
+6. les risques techniques ;
+7. le plan d'implémentation par étapes.
+
+Après validation de cette analyse, commence l'implémentation phase par phase.
