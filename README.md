@@ -93,10 +93,21 @@ npm run dev
 ## Tests
 
 ```bash
-npm run test
+npm run test              # unitaires, purs, sans dépendance réseau
+npm run test:integration  # contre le vrai projet Supabase (voir ci-dessous)
 npm run typecheck
 npm run lint
 ```
+
+`npm run test` couvre uniquement `src/lib/services/*` (disponibilité, calendrier,
+finances, dashboard) — aucune dépendance réseau, s'exécute n'importe où.
+
+`npm run test:integration` (`tests/integration/`) s'exécute contre le **vrai** projet
+Supabase lié : il crée des comptes/données de test isolés, vérifie les règles RLS et RPC
+critiques (§39 : disponibilité, réservation, réservation partagée, max 2 participants,
+permissions, paiements), puis nettoie tout. Nécessite `.env.local` — s'ignore
+silencieusement si les identifiants Supabase ne sont pas présents (donc sûr à lancer sans
+configuration, y compris en CI sans secrets).
 
 ## Build
 

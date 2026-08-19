@@ -54,7 +54,8 @@ export default async function AdminIntermediationPage({
     .select(
       "id, full_name, phone, requested_city, requested_neighborhood, requested_date, requested_start, requested_end, budget, party_size, preferences, comments, status, client_profile_id, assigned_property_id, created_at",
     )
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (activeFilter !== "all") {
     query = query.eq("status", activeFilter as IntermediationStatus);

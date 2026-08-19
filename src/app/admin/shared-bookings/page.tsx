@@ -14,7 +14,8 @@ export default async function AdminSharedBookingsPage() {
   const { data } = await supabase
     .from("shared_booking_requests")
     .select("id, requested_start, requested_end, status, properties(name, city)")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   const requests = (data ?? []) as unknown as Array<{
     id: string;

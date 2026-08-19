@@ -40,7 +40,8 @@ export default async function AdminPropertiesPage({
   let query = supabase
     .from("properties")
     .select("id, name, city, status, owner_id, owners(business_name, profiles(full_name))")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (activeFilter !== "all") {
     query = query.eq("status", activeFilter as PropertyStatus);

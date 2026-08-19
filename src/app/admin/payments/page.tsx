@@ -38,7 +38,8 @@ export default async function AdminPaymentsPage({
     .select(
       "id, reference_code, amount, currency, status, submitted_at, profiles:payer_profile_id(full_name), booking:bookings(booking_code, properties(name))",
     )
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (activeFilter !== "all") {
     query = query.eq("status", activeFilter as PaymentStatus);

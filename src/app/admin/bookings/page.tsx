@@ -21,7 +21,8 @@ export default async function AdminBookingsPage() {
   const { data } = await supabase
     .from("bookings")
     .select("id, booking_code, status, type, starts_at, ends_at, total_price, currency, properties(name, city)")
-    .order("starts_at", { ascending: false });
+    .order("starts_at", { ascending: false })
+    .limit(100);
 
   const bookings = (data ?? []) as unknown as BookingRow[];
 
