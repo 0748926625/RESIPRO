@@ -148,9 +148,9 @@ aperçus (branches/PR) fonctionnent aussi.
    Redirect URLs) : ajouter le domaine de production, ex. `https://votre-domaine.vercel.app/**`
    — sans ça, les liens de confirmation d'email et de réinitialisation de mot de passe
    pointent vers la mauvaise URL.
-2. **Connexion GitHub ↔ Vercel** (Vercel Dashboard → Project → Settings → Git) : permet
-   un déploiement automatique à chaque push sur `main`. La liaison automatique via CLI a
-   échoué pour ce projet ; à connecter manuellement si souhaité.
+2. **Connexion GitHub ↔ Vercel** (Vercel Dashboard → Project → Settings → Git) : ✅ connectée
+   — chaque push sur `main` déclenche désormais un déploiement de production automatique
+   (et chaque autre branche/PR génère un déploiement de preview).
 3. **Mobile Money réel** : configurer les vraies coordonnées de paiement dans
    `/admin/settings` — jamais dans les variables d'environnement ni codées en dur (§31).
 
