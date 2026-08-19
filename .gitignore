@@ -47,3 +47,6 @@ supabase/.temp
 
 .vercel
 .env*
+
+# identifiants de test locaux — jamais commités
+IDENTIFIANTS-TEST.txt
