@@ -18,3 +18,16 @@ export const platformSettingsSchema = z.object({
 });
 
 export type PlatformSettingsInput = z.infer<typeof platformSettingsSchema>;
+
+export const profileSchema = z.object({
+  fullName: z.string().min(2, "Le nom complet est requis."),
+  phone: optionalText,
+});
+
+export type ProfileInput = z.infer<typeof profileSchema>;
+
+export const ownerProfileSchema = profileSchema.extend({
+  businessName: optionalText,
+});
+
+export type OwnerProfileInput = z.infer<typeof ownerProfileSchema>;
