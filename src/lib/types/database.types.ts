@@ -1101,14 +1101,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cancel_booking: { Args: { p_booking_id: string }; Returns: undefined }
       confirm_payment: { Args: { p_payment_id: string }; Returns: undefined }
       create_classic_booking: {
-        Args: {
-          p_ends_at: string
-          p_price: number
-          p_property_id: string
-          p_starts_at: string
-        }
+        Args: { p_ends_at: string; p_property_id: string; p_starts_at: string }
         Returns: string
       }
       create_shared_booking_request: {

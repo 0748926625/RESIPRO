@@ -42,6 +42,29 @@ export const BOOKING_STATUSES = {
 } as const;
 export type BookingStatus = (typeof BOOKING_STATUSES)[keyof typeof BOOKING_STATUSES];
 
+export const BOOKING_STATUS_LABELS: Record<BookingStatus, string> = {
+  draft: "Brouillon",
+  pending: "En attente",
+  awaiting_payment: "En attente de paiement",
+  payment_received: "Paiement reçu",
+  awaiting_owner_confirmation: "En attente de confirmation du gérant",
+  confirmed: "Confirmée",
+  checked_in: "Arrivée effectuée",
+  checked_out: "Départ effectué",
+  completed: "Terminée",
+  cancelled: "Annulée",
+  rejected: "Refusée",
+  expired: "Expirée",
+};
+
+// A booking can no longer be cancelled once it has reached one of these states.
+export const NON_CANCELLABLE_BOOKING_STATUSES: readonly BookingStatus[] = [
+  BOOKING_STATUSES.COMPLETED,
+  BOOKING_STATUSES.CANCELLED,
+  BOOKING_STATUSES.CHECKED_IN,
+  BOOKING_STATUSES.CHECKED_OUT,
+];
+
 export const SEGMENT_STATUSES = {
   PENDING: "pending",
   CONFIRMED: "confirmed",

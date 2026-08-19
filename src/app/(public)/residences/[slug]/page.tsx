@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { DAY_OF_WEEK_LABELS } from "@/lib/validations/availability.schema";
+
+import { BookingForm } from "./booking-form";
 
 type Property = {
   id: string;
@@ -73,6 +77,18 @@ export default async function ResidenceDetailPage({
     notFound();
   }
 
+  const supabase = await createClient();
+  const [{ data: rules }, { data: viewerData }] = await Promise.all([
+    supabase
+      .from("availability_rules")
+      .select("day_of_week, open_time, close_time")
+      .eq("property_id", property.id)
+      .eq("is_active", true)
+      .order("day_of_week")
+      .order("open_time"),
+    supabase.auth.getUser(),
+  ]);
+
   const cover = property.property_images.find((image) => image.is_cover) ?? property.property_images[0];
   const gallery = property.property_images.filter((image) => image !== cover);
 
@@ -142,6 +158,30 @@ export default async function ResidenceDetailPage({
           <p className="whitespace-pre-line text-sm text-foreground/80">{property.house_rules}</p>
         </div>
       ) : null}
+
+      {rules && rules.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-sm font-medium text-foreground">Horaires d&apos;ouverture</h2>
+          <ul className="flex flex-col gap-1 text-sm text-foreground/80">
+            {rules.map((rule, index) => (
+              <li key={index}>
+                {DAY_OF_WEEK_LABELS[rule.day_of_week]} : {rule.open_time.slice(0, 5)} – {rule.close_time.slice(0, 5)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {viewerData.user ? (
+        <BookingForm propertyId={property.id} basePrice={property.base_price} currency={property.currency} />
+      ) : (
+        <div className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-4 text-sm">
+          <p className="text-foreground/80">Connectez-vous pour réserver cette résidence.</p>
+          <Link href={`/login?next=/residences/${slug}`} className="w-fit underline">
+            Se connecter
+          </Link>
+        </div>
+      )}
 
       <p className="text-xs text-foreground/50">
         La réservation et le contact du gérant se font via la plateforme — vos coordonnées ne sont
