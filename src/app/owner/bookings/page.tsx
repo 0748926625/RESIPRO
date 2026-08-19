@@ -1,5 +1,6 @@
 import { BOOKING_STATUS_LABELS } from "@/lib/constants/statuses";
 import type { BookingStatus } from "@/lib/constants/statuses";
+import { ownerConfirmBooking } from "@/lib/bookings/payment-actions";
 import { createClient } from "@/lib/supabase/server";
 
 type BookingRow = {
@@ -45,11 +46,23 @@ export default async function OwnerBookingsPage() {
                   {new Date(booking.ends_at).toLocaleTimeString("fr-FR", { timeStyle: "short" })}
                 </p>
               </div>
-              <div className="flex flex-col items-end gap-1 text-xs text-foreground/60">
-                <span>{BOOKING_STATUS_LABELS[booking.status] ?? booking.status}</span>
-                <span className="font-medium text-foreground">
-                  {booking.total_price} {booking.currency}
-                </span>
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex flex-col items-end gap-1 text-xs text-foreground/60">
+                  <span>{BOOKING_STATUS_LABELS[booking.status] ?? booking.status}</span>
+                  <span className="font-medium text-foreground">
+                    {booking.total_price} {booking.currency}
+                  </span>
+                </div>
+                {booking.status === "awaiting_owner_confirmation" ? (
+                  <form action={ownerConfirmBooking.bind(null, booking.id, "/owner/bookings")}>
+                    <button
+                      type="submit"
+                      className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                    >
+                      Confirmer
+                    </button>
+                  </form>
+                ) : null}
               </div>
             </li>
           ))}

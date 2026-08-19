@@ -1,6 +1,7 @@
 import { BOOKING_STATUS_LABELS, NON_CANCELLABLE_BOOKING_STATUSES } from "@/lib/constants/statuses";
 import type { BookingStatus } from "@/lib/constants/statuses";
 import { cancelBooking } from "@/lib/bookings/actions";
+import { markReservedWithOwner } from "@/lib/bookings/payment-actions";
 import { createClient } from "@/lib/supabase/server";
 
 type BookingRow = {
@@ -49,13 +50,25 @@ export default async function AdminBookingsPage() {
                     {BOOKING_STATUS_LABELS[booking.status] ?? booking.status} · {booking.total_price} {booking.currency}
                   </p>
                 </div>
-                {canCancel ? (
-                  <form action={cancelBooking.bind(null, booking.id, "/admin/bookings")}>
-                    <button type="submit" className="text-xs text-red-600 underline">
-                      Annuler
-                    </button>
-                  </form>
-                ) : null}
+                <div className="flex items-center gap-2">
+                  {booking.status === "payment_received" ? (
+                    <form action={markReservedWithOwner.bind(null, booking.id, "/admin/bookings")}>
+                      <button
+                        type="submit"
+                        className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                      >
+                        Réserver auprès du propriétaire
+                      </button>
+                    </form>
+                  ) : null}
+                  {canCancel ? (
+                    <form action={cancelBooking.bind(null, booking.id, "/admin/bookings")}>
+                      <button type="submit" className="text-xs text-red-600 underline">
+                        Annuler
+                      </button>
+                    </form>
+                  ) : null}
+                </div>
               </li>
             );
           })}

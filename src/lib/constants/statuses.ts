@@ -92,6 +92,13 @@ export const PAYMENT_STATUSES = {
 } as const;
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[keyof typeof PAYMENT_STATUSES];
 
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  pending: "En attente de paiement",
+  payment_submitted: "Déclaré payé — en attente de vérification",
+  payment_confirmed: "Paiement confirmé",
+  payment_rejected: "Paiement refusé",
+};
+
 export const INTERMEDIATION_STATUSES = {
   NEW: "new",
   CONTACTED: "contacted",

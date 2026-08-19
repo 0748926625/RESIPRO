@@ -1101,6 +1101,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_mark_booking_reserved_with_owner: {
+        Args: { p_booking_id: string }
+        Returns: undefined
+      }
       cancel_booking: { Args: { p_booking_id: string }; Returns: undefined }
       cancel_shared_booking_request: {
         Args: { p_request_id: string }
@@ -1139,7 +1143,16 @@ export type Database = {
         Args: { p_ends_at: string; p_request_id: string; p_starts_at: string }
         Returns: string
       }
+      owner_confirm_booking: {
+        Args: { p_booking_id: string }
+        Returns: undefined
+      }
       owns_property: { Args: { p_property_id: string }; Returns: boolean }
+      reject_payment: {
+        Args: { p_note?: string; p_payment_id: string }
+        Returns: undefined
+      }
+      resubmit_payment: { Args: { p_payment_id: string }; Returns: undefined }
       set_property_status: {
         Args: {
           p_allowed_from: Database["public"]["Enums"]["property_status"][]
