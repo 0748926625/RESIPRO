@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PhotoManager } from "@/components/property/photo-manager";
@@ -58,6 +59,9 @@ export default async function EditPropertyPage({
           <p className="text-sm text-foreground/60">
             Statut : {STATUS_LABELS[property.status] ?? property.status}
           </p>
+          <Link href={`/owner/properties/${id}/availability`} className="text-xs text-foreground underline">
+            Calendrier &amp; disponibilités
+          </Link>
         </div>
         {canSubmit ? (
           <form action={boundSubmit}>
