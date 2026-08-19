@@ -116,6 +116,52 @@ npm run build
 npm run start
 ```
 
+## Déploiement
+
+**Production : https://residence-pro.vercel.app** (Vercel, plan Hobby).
+
+Vercel est le choix naturel pour cette app : elle dépend fortement de fonctionnalités
+Next.js qui nécessitent un vrai serveur (Server Actions, `proxy.ts`, rendu par requête
+selon la session) — impossible sur un hébergeur purement statique (GitHub Pages,
+Cloudflare Pages sans adaptateur, etc.).
+
+### Déployer soi-même
+
+```bash
+npm i -g vercel
+vercel link          # une seule fois, choisir/créer le projet
+vercel env add NEXT_PUBLIC_SUPABASE_URL production
+vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
+vercel env add SUPABASE_SERVICE_ROLE_KEY production
+vercel env add NEXT_PUBLIC_APP_URL production        # ex. https://votre-domaine.vercel.app
+vercel env add NEXT_PUBLIC_APP_NAME production
+vercel deploy         # aperçu
+vercel deploy --prod  # production
+```
+
+Répéter les mêmes variables pour l'environnement `preview` si vous voulez que les
+aperçus (branches/PR) fonctionnent aussi.
+
+### Étapes manuelles après un premier déploiement
+
+1. **Redirections Supabase Auth** (Dashboard → Authentication → URL Configuration →
+   Redirect URLs) : ajouter le domaine de production, ex. `https://votre-domaine.vercel.app/**`
+   — sans ça, les liens de confirmation d'email et de réinitialisation de mot de passe
+   pointent vers la mauvaise URL.
+2. **Connexion GitHub ↔ Vercel** (Vercel Dashboard → Project → Settings → Git) : permet
+   un déploiement automatique à chaque push sur `main`. La liaison automatique via CLI a
+   échoué pour ce projet ; à connecter manuellement si souhaité.
+3. **Mobile Money réel** : configurer les vraies coordonnées de paiement dans
+   `/admin/settings` — jamais dans les variables d'environnement ni codées en dur (§31).
+
+### Node.js
+
+Le projet épingle `engines.node: "24.x"` dans `package.json`, aligné sur la version
+recommandée par Vercel au moment du déploiement. Si `npm install` échoue sur Vercel avec
+une erreur `Invalid Version` sans autre détail, régénérer `package-lock.json`
+(`rm -rf node_modules package-lock.json && npm install`) résout généralement un état de
+verrouillage incohérent avec le registre npm.
+
 ## Rôles
 
 | Rôle | Description |
