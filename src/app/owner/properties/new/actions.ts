@@ -104,5 +104,5 @@ export async function createProperty(
       .insert(input.amenityIds.map((amenityId) => ({ property_id: propertyId, amenity_id: amenityId })));
   }
 
-  redirect(`/owner/properties/${propertyId}`);
+  redirect(`/owner/properties/${propertyId}?created=1`);
 }
