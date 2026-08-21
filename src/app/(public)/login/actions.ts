@@ -12,29 +12,6 @@ export type LoginActionState = {
   fieldErrors?: Record<string, string[]>;
 };
 
-// OAuth accounts are provisioned the same way password accounts are (handle_new_user(),
-// 0016) — Google never supplies a role hint, so a first-time Google sign-in always lands
-// as 'client', same as the default for any signup that doesn't explicitly ask for 'owner'.
-// Owners still go through /register for their explicit role choice.
-export async function signInWithGoogle(next?: string): Promise<never> {
-  const supabase = await createClient();
-  const callbackUrl = new URL("/auth/callback", process.env.NEXT_PUBLIC_APP_URL);
-  if (next && next.startsWith("/")) {
-    callbackUrl.searchParams.set("next", next);
-  }
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: callbackUrl.toString() },
-  });
-
-  if (error || !data.url) {
-    redirect("/login?error=" + encodeURIComponent("Connexion Google indisponible pour le moment."));
-  }
-
-  redirect(data.url);
-}
-
 export async function login(
   _prevState: LoginActionState,
   formData: FormData,
