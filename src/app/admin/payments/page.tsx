@@ -12,7 +12,7 @@ type PaymentRow = {
   currency: string;
   status: PaymentStatus;
   submitted_at: string | null;
-  profiles: { full_name: string } | null;
+  profiles: { full_name: string; phone: string | null } | null;
   booking: { booking_code: string; properties: { name: string } | null } | null;
 };
 
@@ -36,7 +36,7 @@ export default async function AdminPaymentsPage({
   let query = supabase
     .from("payments")
     .select(
-      "id, reference_code, amount, currency, status, submitted_at, profiles:payer_profile_id(full_name), booking:bookings(booking_code, properties(name))",
+      "id, reference_code, amount, currency, status, submitted_at, profiles:payer_profile_id(full_name, phone), booking:bookings(booking_code, properties(name))",
     )
     .order("created_at", { ascending: false })
     .limit(100);
@@ -82,6 +82,11 @@ export default async function AdminPaymentsPage({
                   {payment.booking?.properties?.name ?? "Résidence"} · {payment.amount} {payment.currency}
                 </p>
                 <p className="text-xs text-foreground/50">{PAYMENT_STATUS_LABELS[payment.status]}</p>
+                {payment.profiles?.phone ? (
+                  <a href={`tel:${payment.profiles.phone}`} className="text-xs text-primary underline">
+                    Appeler le client · {payment.profiles.phone}
+                  </a>
+                ) : null}
               </div>
               {payment.status === "payment_submitted" ? (
                 <div className="flex items-center gap-2">

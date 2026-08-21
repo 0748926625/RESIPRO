@@ -114,7 +114,14 @@ export default async function AdminPropertiesPage({
                       {property.owners?.profiles?.full_name ?? property.owners?.business_name ?? "—"}
                     </p>
                     <p className="text-xs text-foreground/50">
-                      Tél. gérant : {property.owners?.profiles?.phone ?? "non renseigné"}
+                      Tél. gérant :{" "}
+                      {property.owners?.profiles?.phone ? (
+                        <a href={`tel:${property.owners.profiles.phone}`} className="text-primary underline">
+                          {property.owners.profiles.phone}
+                        </a>
+                      ) : (
+                        "non renseigné"
+                      )}
                     </p>
                     <p className="text-xs text-foreground/50">{STATUS_LABELS[property.status]}</p>
                     <form

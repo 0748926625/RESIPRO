@@ -48,7 +48,14 @@ export default async function AdminOwnersPage() {
                   {owner.business_name ? ` — ${owner.business_name}` : ""}
                 </p>
                 <p className="text-foreground/60">
-                  {owner.profiles?.phone ?? "—"} · {propertyCountByOwner.get(owner.id) ?? 0} résidence(s)
+                  {owner.profiles?.phone ? (
+                    <a href={`tel:${owner.profiles.phone}`} className="text-primary underline">
+                      {owner.profiles.phone}
+                    </a>
+                  ) : (
+                    "—"
+                  )}{" "}
+                  · {propertyCountByOwner.get(owner.id) ?? 0} résidence(s)
                 </p>
                 <p className="text-xs text-foreground/50">
                   {owner.profiles ? PROFILE_STATUS_LABELS[owner.profiles.status] : "—"} ·{" "}

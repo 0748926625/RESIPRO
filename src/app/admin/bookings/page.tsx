@@ -14,14 +14,20 @@ type BookingRow = {
   ends_at: string;
   total_price: number;
   currency: string;
-  properties: { name: string; city: string } | null;
+  properties: {
+    name: string;
+    city: string;
+    owners: { profiles: { phone: string | null } | null } | null;
+  } | null;
 };
 
 export default async function AdminBookingsPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("bookings")
-    .select("id, booking_code, status, type, starts_at, ends_at, total_price, currency, properties(name, city)")
+    .select(
+      "id, booking_code, status, type, starts_at, ends_at, total_price, currency, properties(name, city, owners(profiles(phone)))",
+    )
     .order("starts_at", { ascending: false })
     .limit(100);
 
@@ -49,6 +55,11 @@ export default async function AdminBookingsPage() {
                   <p className="text-xs text-foreground/50">
                     {BOOKING_STATUS_LABELS[booking.status] ?? booking.status} · {booking.total_price} {booking.currency}
                   </p>
+                  {booking.properties?.owners?.profiles?.phone ? (
+                    <a href={`tel:${booking.properties.owners.profiles.phone}`} className="text-xs text-primary underline">
+                      Appeler le gérant · {booking.properties.owners.profiles.phone}
+                    </a>
+                  ) : null}
                 </div>
                 <div className="flex items-center gap-2">
                   {booking.status === "payment_received" ? (

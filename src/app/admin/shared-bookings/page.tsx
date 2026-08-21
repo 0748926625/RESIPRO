@@ -13,7 +13,7 @@ export default async function AdminSharedBookingsPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("shared_booking_requests")
-    .select("id, requested_start, requested_end, status, properties(name, city)")
+    .select("id, requested_start, requested_end, status, properties(name, city, owners(profiles(phone)))")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -22,7 +22,11 @@ export default async function AdminSharedBookingsPage() {
     requested_start: string;
     requested_end: string;
     status: string;
-    properties: { name: string; city: string } | null;
+    properties: {
+      name: string;
+      city: string;
+      owners: { profiles: { phone: string | null } | null } | null;
+    } | null;
   }>;
 
   return (
@@ -47,6 +51,11 @@ export default async function AdminSharedBookingsPage() {
                   – {new Date(request.requested_end).toLocaleTimeString("fr-FR", { timeStyle: "short" })}
                 </p>
                 <p className="text-xs text-foreground/50">{STATUS_LABELS[request.status] ?? request.status}</p>
+                {request.properties?.owners?.profiles?.phone ? (
+                  <a href={`tel:${request.properties.owners.profiles.phone}`} className="text-xs text-primary underline">
+                    Appeler le gérant · {request.properties.owners.profiles.phone}
+                  </a>
+                ) : null}
               </div>
               {request.status === "searching_partner" ? (
                 <form action={cancelSharedBookingRequest.bind(null, request.id, "/admin/shared-bookings")}>
