@@ -9,3 +9,9 @@ export const externalBookingSchema = z.object({
 });
 
 export type ExternalBookingInput = z.infer<typeof externalBookingSchema>;
+
+export const invoicePaymentSchema = z.object({
+  amount: z.coerce.number().positive("Le montant doit être supérieur à zéro."),
+});
+
+export type InvoicePaymentInput = z.infer<typeof invoicePaymentSchema>;

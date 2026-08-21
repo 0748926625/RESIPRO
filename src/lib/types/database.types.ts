@@ -1171,7 +1171,7 @@ export type Database = {
         Args: { p_booking_id: string }
         Returns: undefined
       }
-      archive_property: { Args: { p_property_id: string }; Returns: undefined }
+      archive_property: { Args: { p_property_id: string }; Returns: string }
       cancel_booking: { Args: { p_booking_id: string }; Returns: undefined }
       cancel_shared_booking_request: {
         Args: { p_request_id: string }
@@ -1211,6 +1211,28 @@ export type Database = {
         Returns: boolean
       }
       generate_booking_code: { Args: never; Returns: string }
+      get_public_invoice: {
+        Args: { p_invoice_id: string }
+        Returns: {
+          amount_paid: number
+          client_name: string
+          created_at: string
+          currency: string
+          ends_at: string
+          invoice_id: string
+          logo_url: string
+          nightly_rate: number
+          note: string
+          owner_business_name: string
+          owner_full_name: string
+          owner_phone: string
+          property_address: string
+          property_city: string
+          property_name: string
+          signature_url: string
+          starts_at: string
+        }[]
+      }
       has_overlapping_segment: {
         Args: {
           p_buffer_minutes?: number
