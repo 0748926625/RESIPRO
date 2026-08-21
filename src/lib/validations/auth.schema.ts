@@ -8,14 +8,6 @@ export const loginSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
-export const magicLinkSchema = z.object({
-  email: z.string().min(1, "L'email est requis.").email("Adresse email invalide."),
-  role: z.enum(["client", "owner"]).default("client"),
-  next: z.string().optional(),
-});
-
-export type MagicLinkInput = z.infer<typeof magicLinkSchema>;
-
 // Matches the two self-selectable roles enforced server-side in
 // supabase/migrations/0016_signup_role_selection.sql — "super_admin" is deliberately absent.
 export const registerSchema = z

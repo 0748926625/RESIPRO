@@ -5,63 +5,34 @@ import { redirect } from "next/navigation";
 import type { UserRole } from "@/lib/constants/roles";
 import { dashboardPathForRole } from "@/lib/auth/redirect-by-role";
 import { createClient } from "@/lib/supabase/server";
-import { loginSchema, magicLinkSchema } from "@/lib/validations/auth.schema";
+import { loginSchema } from "@/lib/validations/auth.schema";
 
 export type LoginActionState = {
   error?: string;
   fieldErrors?: Record<string, string[]>;
 };
 
-export type MagicLinkActionState = {
-  error?: string;
-  fieldErrors?: Record<string, string[]>;
-  success?: boolean;
-};
-
-// Passwordless: one email field (plus a client/owner toggle), no separate "create an
-// account" step — a first-time address gets a profile via handle_new_user() (0016) the
-// moment the link is clicked. The chosen role rides along as auth user_metadata (the same
-// channel /register's signUp() uses), so handle_new_user() picks it up identically —
-// password signup via /register stays available as a fallback for anyone who wants to set
-// a password and business details upfront.
-export async function sendMagicLink(
-  _prevState: MagicLinkActionState,
-  formData: FormData,
-): Promise<MagicLinkActionState> {
-  const parsed = magicLinkSchema.safeParse({
-    email: formData.get("email"),
-    role: formData.get("role") || undefined,
-    next: formData.get("next") || undefined,
-  });
-
-  if (!parsed.success) {
-    return { fieldErrors: parsed.error.flatten().fieldErrors };
-  }
-
+// OAuth accounts are provisioned the same way password accounts are (handle_new_user(),
+// 0016) — Google never supplies a role hint, so a first-time Google sign-in always lands
+// as 'client', same as the default for any signup that doesn't explicitly ask for 'owner'.
+// Owners still go through /register for their explicit role choice.
+export async function signInWithGoogle(next?: string): Promise<never> {
   const supabase = await createClient();
-  // Not /auth/callback: that route only handles the ?code= (PKCE) exchange used by
-  // signup confirmation and password reset. Magic-link verification redirects with the
-  // session in the URL *fragment* instead, which only a client-rendered page can read —
-  // see src/app/auth/magic-link/page.tsx.
-  const callbackUrl = new URL("/auth/magic-link", process.env.NEXT_PUBLIC_APP_URL);
-  if (parsed.data.next && parsed.data.next.startsWith("/")) {
-    callbackUrl.searchParams.set("next", parsed.data.next);
+  const callbackUrl = new URL("/auth/callback", process.env.NEXT_PUBLIC_APP_URL);
+  if (next && next.startsWith("/")) {
+    callbackUrl.searchParams.set("next", next);
   }
 
-  const { error } = await supabase.auth.signInWithOtp({
-    email: parsed.data.email,
-    options: {
-      shouldCreateUser: true,
-      emailRedirectTo: callbackUrl.toString(),
-      data: { role: parsed.data.role },
-    },
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: callbackUrl.toString() },
   });
 
-  if (error) {
-    return { error: "Impossible d'envoyer le lien pour le moment. Réessayez." };
+  if (error || !data.url) {
+    redirect("/login?error=" + encodeURIComponent("Connexion Google indisponible pour le moment."));
   }
 
-  return { success: true };
+  redirect(data.url);
 }
 
 export async function login(
