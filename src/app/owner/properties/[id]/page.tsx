@@ -145,6 +145,7 @@ export default async function EditPropertyPage({
             checkOutTime: property.check_out_time,
             cleaningBufferMinutes: property.cleaning_buffer_minutes,
             houseRules: property.house_rules ?? undefined,
+            allowsHalfDay: property.allows_half_day,
             amenityIds: (propertyAmenities ?? []).map((row) => row.amenity_id),
           }}
         />

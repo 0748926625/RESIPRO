@@ -69,6 +69,7 @@ export async function createProperty(
       check_out_time: input.checkOutTime ?? null,
       cleaning_buffer_minutes: input.cleaningBufferMinutes,
       house_rules: input.houseRules ?? null,
+      allows_half_day: input.allowsHalfDay,
       // manager_phone_visibility deliberately omitted: defaults to 'admin_only' in the
       // DB, and only the Super Admin can change it (see admin/properties) — an owner
       // must never be able to self-reveal their phone to a client.

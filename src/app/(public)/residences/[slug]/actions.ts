@@ -17,9 +17,8 @@ export async function requestClassicBooking(
   formData: FormData,
 ): Promise<BookingFormState> {
   const parsed = classicBookingRequestSchema.safeParse({
-    date: formData.get("date"),
-    startTime: formData.get("startTime"),
-    endTime: formData.get("endTime"),
+    startsAt: formData.get("startsAt"),
+    endsAt: formData.get("endsAt"),
   });
 
   if (!parsed.success) {
@@ -35,14 +34,10 @@ export async function requestClassicBooking(
     redirect("/login");
   }
 
-  const { date, startTime, endTime } = parsed.data;
-  const startsAt = new Date(`${date}T${startTime}:00`);
-  const endsAt = new Date(`${date}T${endTime}:00`);
-
   const { data: bookingId, error } = await supabase.rpc("create_classic_booking", {
     p_property_id: propertyId,
-    p_starts_at: startsAt.toISOString(),
-    p_ends_at: endsAt.toISOString(),
+    p_starts_at: parsed.data.startsAt,
+    p_ends_at: parsed.data.endsAt,
   });
 
   if (error) {
@@ -58,9 +53,8 @@ export async function requestSharedBooking(
   formData: FormData,
 ): Promise<BookingFormState> {
   const parsed = sharedBookingRequestSchema.safeParse({
-    date: formData.get("date"),
-    startTime: formData.get("startTime"),
-    endTime: formData.get("endTime"),
+    startsAt: formData.get("startsAt"),
+    endsAt: formData.get("endsAt"),
   });
 
   if (!parsed.success) {
@@ -76,14 +70,10 @@ export async function requestSharedBooking(
     redirect("/login");
   }
 
-  const { date, startTime, endTime } = parsed.data;
-  const startsAt = new Date(`${date}T${startTime}:00`);
-  const endsAt = new Date(`${date}T${endTime}:00`);
-
   const { error } = await supabase.rpc("create_shared_booking_request", {
     p_property_id: propertyId,
-    p_starts_at: startsAt.toISOString(),
-    p_ends_at: endsAt.toISOString(),
+    p_starts_at: parsed.data.startsAt,
+    p_ends_at: parsed.data.endsAt,
   });
 
   if (error) {

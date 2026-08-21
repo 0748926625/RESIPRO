@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { windowsFromRules } from "@/lib/services/availability.service";
 import { createClient } from "@/lib/supabase/server";
 import { DAY_OF_WEEK_LABELS } from "@/lib/validations/availability.schema";
 
@@ -22,6 +21,7 @@ type Property = {
   currency: string;
   check_in_time: string | null;
   check_out_time: string | null;
+  allows_half_day: boolean;
   house_rules: string | null;
   property_images: { url: string; is_cover: boolean }[];
   property_amenities: { amenities: { label: string } | null }[];
@@ -32,7 +32,7 @@ async function getApprovedProperty(slug: string) {
   const { data } = await supabase
     .from("properties")
     .select(
-      "id, name, description, city, neighborhood, address, capacity, bedrooms, base_price, currency, check_in_time, check_out_time, house_rules, property_images(url, is_cover), property_amenities(amenities(label))",
+      "id, name, description, city, neighborhood, address, capacity, bedrooms, base_price, currency, check_in_time, check_out_time, allows_half_day, house_rules, property_images(url, is_cover), property_amenities(amenities(label))",
     )
     .eq("slug", slug)
     .eq("status", "approved")
@@ -102,42 +102,39 @@ export default async function ResidenceDetailPage({
       .order("requested_start"),
   ]);
 
-  const activeRules = (rules ?? []).map((rule) => ({
-    dayOfWeek: rule.day_of_week,
-    openTime: rule.open_time,
-    closeTime: rule.close_time,
-    isActive: true,
-  }));
   const activeBlocks = (blockRows ?? []).map((block) => ({
     start: new Date(block.starts_at),
     end: new Date(block.ends_at),
   }));
+  const checkInTime = (property.check_in_time ?? "13:00:00").slice(0, 5);
 
+  // A shared request is always exactly one canonical half-day slot (7h "day" half or 17h
+  // "night" half — see migration 0036); the only joinable candidate is the other half of
+  // that same day cycle. Requests created under the old free-form model won't match
+  // either duration and are simply not offered as joinable.
   const now = new Date();
   const viewerId = viewerData.user?.id;
-  const joinableRequests = (openRequests ?? [])
-    .filter((request) => request.initiator_profile_id !== viewerId)
-    .filter((request) => !request.expires_at || new Date(request.expires_at) > now)
-    .map((request) => {
-      const requestedStart = new Date(request.requested_start);
-      const requestedEnd = new Date(request.requested_end);
-      const dayWindow = windowsFromRules(activeRules, requestedStart).find(
-        (window) => window.start <= requestedStart && requestedEnd <= window.end,
-      );
+  const joinableRequests = property.allows_half_day
+    ? (openRequests ?? [])
+        .filter((request) => request.initiator_profile_id !== viewerId)
+        .filter((request) => !request.expires_at || new Date(request.expires_at) > now)
+        .map((request) => {
+          const requestedStart = new Date(request.requested_start);
+          const requestedEnd = new Date(request.requested_end);
+          const durationHours = (requestedEnd.getTime() - requestedStart.getTime()) / 3600000;
 
-      const candidates: { start: Date; end: Date }[] = [];
-      if (dayWindow) {
-        if (dayWindow.start < requestedStart) {
-          candidates.push({ start: dayWindow.start, end: requestedStart });
-        }
-        if (requestedEnd < dayWindow.end) {
-          candidates.push({ start: requestedEnd, end: dayWindow.end });
-        }
-      }
+          let candidate: { start: Date; end: Date } | null = null;
+          if (durationHours === 7) {
+            candidate = { start: requestedEnd, end: new Date(requestedStart.getTime() + 24 * 3600000) };
+          } else if (durationHours === 17) {
+            candidate = { start: new Date(requestedStart.getTime() - 17 * 3600000), end: requestedStart };
+          }
 
-      return { id: request.id, requestedStart, requestedEnd, candidates };
-    })
-    .filter((request) => request.candidates.length > 0);
+          return { id: request.id, requestedStart, requestedEnd, candidate };
+        })
+        .filter((request) => request.candidate !== null)
+        .map((request) => ({ ...request, candidate: request.candidate! }))
+    : [];
 
   const cover = property.property_images.find((image) => image.is_cover) ?? property.property_images[0];
   const gallery = property.property_images.filter((image) => image !== cover);
@@ -226,65 +223,70 @@ export default async function ResidenceDetailPage({
         <>
           <BookingCalendar
             action={requestClassicBooking.bind(null, property.id)}
-            rules={activeRules}
             blocks={activeBlocks}
+            checkInTime={checkInTime}
+            allowsHalfDay={property.allows_half_day}
+            mode="classic"
             title="Réserver"
             priceLabel={`${property.base_price} ${property.currency}`}
             submitLabel="Réserver ce créneau"
           />
 
-          <div className="flex flex-col gap-3">
-            <h2 className="text-sm font-medium text-foreground">Réservation partagée à deux</h2>
-            {joinableRequests.length > 0 ? (
-              <ul className="flex flex-col gap-2">
-                {joinableRequests.map((request) => (
-                  <li
-                    key={request.id}
-                    className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <span className="text-foreground/80">
-                      Un participant a réservé{" "}
-                      {request.requestedStart.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })} –{" "}
-                      {request.requestedEnd.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {request.candidates.map((candidate) => (
-                        <form
-                          key={candidate.start.toISOString()}
-                          action={joinSharedBooking.bind(
-                            null,
-                            request.id,
-                            candidate.start.toISOString(),
-                            candidate.end.toISOString(),
-                          )}
-                        >
-                          <button
-                            type="submit"
-                            className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
-                          >
-                            Rejoindre {candidate.start.toLocaleTimeString("fr-FR", { timeStyle: "short" })}–
-                            {candidate.end.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
-                          </button>
-                        </form>
-                      ))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-foreground/60">
-                Aucune demande de partage en attente pour cette résidence pour le moment.
+          {property.allows_half_day ? (
+            <div className="flex flex-col gap-3">
+              <h2 className="text-sm font-medium text-foreground">Réservation partagée à deux</h2>
+              <p className="text-xs text-foreground/60">
+                Une demi-journée réservée seule attend un deuxième client pour l&apos;autre demi-journée de la
+                même journée.
               </p>
-            )}
-            <BookingCalendar
-              action={requestSharedBooking.bind(null, property.id)}
-              rules={activeRules}
-              blocks={activeBlocks}
-              title="Créer une demande de partage"
-              priceLabel={`${Math.round(property.base_price / 2)} ${property.currency} / personne`}
-              submitLabel="Créer la demande"
-            />
-          </div>
+              {joinableRequests.length > 0 ? (
+                <ul className="flex flex-col gap-2">
+                  {joinableRequests.map((request) => (
+                    <li
+                      key={request.id}
+                      className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <span className="text-foreground/80">
+                        Un participant a réservé{" "}
+                        {request.requestedStart.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}{" "}
+                        – {request.requestedEnd.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                      </span>
+                      <form
+                        action={joinSharedBooking.bind(
+                          null,
+                          request.id,
+                          request.candidate.start.toISOString(),
+                          request.candidate.end.toISOString(),
+                        )}
+                      >
+                        <button
+                          type="submit"
+                          className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                        >
+                          Rejoindre {request.candidate.start.toLocaleTimeString("fr-FR", { timeStyle: "short" })}–
+                          {request.candidate.end.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-foreground/60">
+                  Aucune demande de partage en attente pour cette résidence pour le moment.
+                </p>
+              )}
+              <BookingCalendar
+                action={requestSharedBooking.bind(null, property.id)}
+                blocks={activeBlocks}
+                checkInTime={checkInTime}
+                allowsHalfDay={property.allows_half_day}
+                mode="shared"
+                title="Créer une demande de partage"
+                priceLabel={`${Math.round(property.base_price / 2)} ${property.currency} / personne`}
+                submitLabel="Créer la demande"
+              />
+            </div>
+          ) : null}
         </>
       ) : (
         <div className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-4 text-sm">

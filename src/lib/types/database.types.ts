@@ -903,6 +903,7 @@ export type Database = {
       properties: {
         Row: {
           address: string | null
+          allows_half_day: boolean
           base_price: number
           bedrooms: number
           capacity: number
@@ -930,6 +931,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          allows_half_day?: boolean
           base_price?: number
           bedrooms?: number
           capacity?: number
@@ -957,6 +959,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          allows_half_day?: boolean
           base_price?: number
           bedrooms?: number
           capacity?: number
@@ -1199,6 +1202,10 @@ export type Database = {
         Returns: string
       }
       fits_availability_window: {
+        Args: { p_ends_at: string; p_property_id: string; p_starts_at: string }
+        Returns: boolean
+      }
+      fits_checkin_slot: {
         Args: { p_ends_at: string; p_property_id: string; p_starts_at: string }
         Returns: boolean
       }

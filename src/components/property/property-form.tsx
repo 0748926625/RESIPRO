@@ -36,6 +36,7 @@ export function PropertyForm({
     checkOutTime?: string | null;
     cleaningBufferMinutes?: number;
     houseRules?: string;
+    allowsHalfDay?: boolean;
     amenityIds?: string[];
   };
   submitLabel: string;
@@ -163,6 +164,24 @@ export function PropertyForm({
           errors={state.fieldErrors?.cleaningBufferMinutes}
         />
       </div>
+
+      <label className="flex items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          name="allowsHalfDay"
+          defaultChecked={defaultValues?.allowsHalfDay ?? true}
+          className="mt-0.5"
+        />
+        <span>
+          <span className="font-medium text-foreground">Accepter les réservations à la demi-journée</span>
+          <br />
+          <span className="text-xs text-foreground/60">
+            Si activé, les clients peuvent réserver une demi-journée (de l&apos;heure d&apos;arrivée à +7h, ou de
+            +7h à l&apos;heure d&apos;arrivée le lendemain) en plus de la journée complète — et une réservation
+            partagée devient possible entre deux clients qui prennent chacun une moitié.
+          </span>
+        </span>
+      </label>
 
       <div className="flex flex-col gap-1">
         <label htmlFor="houseRules" className="text-sm font-medium text-foreground">

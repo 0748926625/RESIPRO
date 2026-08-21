@@ -15,7 +15,12 @@ export default async function NewPropertyPage() {
           Elle restera en brouillon jusqu&apos;à ce que vous la soumettiez pour validation.
         </p>
       </div>
-      <PropertyForm action={createProperty} amenities={amenities ?? []} submitLabel="Créer la résidence" />
+      <PropertyForm
+        action={createProperty}
+        amenities={amenities ?? []}
+        submitLabel="Créer la résidence"
+        defaultValues={{ checkInTime: "13:00", checkOutTime: "13:00", allowsHalfDay: true }}
+      />
     </div>
   );
 }

@@ -30,6 +30,7 @@ export const propertyInputSchema = z.object({
   checkOutTime: optionalText,
   cleaningBufferMinutes: z.coerce.number().int().min(0).default(0),
   houseRules: optionalText,
+  allowsHalfDay: z.boolean().default(true),
   amenityIds: z.array(z.string().uuid()).default([]),
 });
 
@@ -51,6 +52,7 @@ export function propertyFormDataToInput(formData: FormData) {
     checkOutTime: formData.get("checkOutTime"),
     cleaningBufferMinutes: formData.get("cleaningBufferMinutes") || 0,
     houseRules: formData.get("houseRules"),
+    allowsHalfDay: formData.get("allowsHalfDay") === "on",
     amenityIds: formData.getAll("amenityIds"),
   };
 }

@@ -1,14 +1,21 @@
 import { z } from "zod";
 
+const isoTimestamp = z
+  .string()
+  .min(1, "Créneau requis.")
+  .refine((value) => !Number.isNaN(new Date(value).getTime()), "Date invalide.");
+
+// Full ISO timestamps rather than a shared date + two times: a half-day "night" slot
+// (e.g. 20:00 -> 13:00 the next day) spans two calendar dates, so start and end need
+// independent dates, not one date reused for both.
 export const classicBookingRequestSchema = z
   .object({
-    date: z.string().min(1, "Date requise."),
-    startTime: z.string().min(1, "Heure de début requise."),
-    endTime: z.string().min(1, "Heure de fin requise."),
+    startsAt: isoTimestamp,
+    endsAt: isoTimestamp,
   })
-  .refine((data) => data.startTime < data.endTime, {
-    message: "L'heure de fin doit être après l'heure de début.",
-    path: ["endTime"],
+  .refine((data) => new Date(data.startsAt) < new Date(data.endsAt), {
+    message: "La fin doit être après le début.",
+    path: ["endsAt"],
   });
 
 export type ClassicBookingRequestInput = z.infer<typeof classicBookingRequestSchema>;
