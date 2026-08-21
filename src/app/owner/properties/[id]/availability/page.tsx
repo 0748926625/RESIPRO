@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AVAILABILITY_BLOCK_REASON_LABELS, DAY_OF_WEEK_LABELS } from "@/lib/validations/availability.schema";
 
 import { createExternalBooking } from "../invoices/actions";
-import { createBlock, createRule, deleteBlock, deleteRule, setQuickBlocks } from "./actions";
+import { createBlock, createRule, deleteBlock, deleteRule, setQuickBlocks, tagQuickBlocksWithClient } from "./actions";
 
 const timeFormatter = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
@@ -40,7 +40,7 @@ export default async function PropertyAvailabilityPage({
       .order("open_time"),
     supabase
       .from("availability_blocks")
-      .select("id, starts_at, ends_at, reason, note")
+      .select("id, starts_at, ends_at, reason, note, client_name")
       .eq("property_id", id)
       .order("starts_at"),
   ]);
@@ -58,6 +58,7 @@ export default async function PropertyAvailabilityPage({
     end: new Date(block.ends_at),
     reason: block.reason,
     note: block.note,
+    clientName: block.client_name,
   }));
 
   const basePath = `/owner/properties/${id}/availability`;
@@ -73,6 +74,7 @@ export default async function PropertyAvailabilityPage({
   const boundCreateBlock = createBlock.bind(null, id);
   const boundSetQuickBlocks = setQuickBlocks.bind(null, id);
   const boundCreateExternalBooking = createExternalBooking.bind(null, id);
+  const boundTagQuickBlocksWithClient = tagQuickBlocksWithClient.bind(null, id);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-8">
@@ -155,6 +157,7 @@ export default async function PropertyAvailabilityPage({
             currency={property.currency}
             onToggleQuickBlocks={boundSetQuickBlocks}
             onCreateInvoice={boundCreateExternalBooking}
+            onTagClient={boundTagQuickBlocksWithClient}
           />
         </div>
       )}
@@ -191,9 +194,11 @@ export default async function PropertyAvailabilityPage({
             {blocks.map((block) => (
               <li key={block.id} className="flex items-center justify-between px-3 py-2 text-sm">
                 <span>
-                  {AVAILABILITY_BLOCK_REASON_LABELS[
-                    block.reason as keyof typeof AVAILABILITY_BLOCK_REASON_LABELS
-                  ] ?? block.reason}{" "}
+                  {block.clientName ??
+                    AVAILABILITY_BLOCK_REASON_LABELS[
+                      block.reason as keyof typeof AVAILABILITY_BLOCK_REASON_LABELS
+                    ] ??
+                    block.reason}{" "}
                   · {block.start.toLocaleDateString("fr-FR")} {timeFormatter.format(block.start)}–
                   {timeFormatter.format(block.end)}
                   {block.note ? ` · ${block.note}` : ""}

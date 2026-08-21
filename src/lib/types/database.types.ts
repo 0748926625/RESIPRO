@@ -81,6 +81,7 @@ export type Database = {
       }
       availability_blocks: {
         Row: {
+          client_name: string | null
           created_at: string
           created_by: string | null
           ends_at: string
@@ -91,6 +92,7 @@ export type Database = {
           starts_at: string
         }
         Insert: {
+          client_name?: string | null
           created_at?: string
           created_by?: string | null
           ends_at: string
@@ -101,6 +103,7 @@ export type Database = {
           starts_at: string
         }
         Update: {
+          client_name?: string | null
           created_at?: string
           created_by?: string | null
           ends_at?: string

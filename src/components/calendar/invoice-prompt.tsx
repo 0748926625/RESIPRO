@@ -17,6 +17,7 @@ export function InvoicePrompt({
   dates,
   currency,
   createAction,
+  tagClientAction,
   onClose,
 }: {
   propertyId: string;
@@ -29,6 +30,10 @@ export function InvoicePrompt({
     nightlyRate: number;
     amountPaid: number;
   }) => Promise<CreateInvoiceResult>;
+  // Purely for calendar coloring (month-calendar.tsx) — independent of whether a priced
+  // invoice ever gets created, so "same client extending" vs "different client" can be
+  // told apart even when the owner just skips the invoice form.
+  tagClientAction: (dates: string[], clientName: string) => Promise<void>;
   onClose: () => void;
 }) {
   const sorted = [...dates].sort();
@@ -48,9 +53,23 @@ export function InvoicePrompt({
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     startTransition(async () => {
+      if (clientName.trim()) {
+        await tagClientAction(dates, clientName);
+      }
       const res = await createAction({ clientName, startsAt, endsAt, nightlyRate: rateNumber, amountPaid: paidNumber });
       setResult(res);
     });
+  }
+
+  function handleSkip() {
+    if (clientName.trim()) {
+      startTransition(async () => {
+        await tagClientAction(dates, clientName);
+        onClose();
+      });
+    } else {
+      onClose();
+    }
   }
 
   if (result && "id" in result) {
@@ -78,7 +97,7 @@ export function InvoicePrompt({
         <p className="font-medium text-foreground">
           Générer une facture pour ce séjour ({sorted.length} nuit{sorted.length > 1 ? "s" : ""}) ?
         </p>
-        <button type="button" onClick={onClose} className="text-xs text-foreground/50 underline">
+        <button type="button" onClick={handleSkip} disabled={isPending} className="text-xs text-foreground/50 underline">
           Ignorer
         </button>
       </div>

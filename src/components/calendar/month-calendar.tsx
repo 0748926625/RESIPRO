@@ -16,7 +16,34 @@ import { InvoicePrompt } from "./invoice-prompt";
 
 const WEEKDAY_LABELS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
-type BlockWithMeta = AvailabilityBlock & { id: string; reason: string; note: string | null };
+type BlockWithMeta = AvailabilityBlock & {
+  id: string;
+  reason: string;
+  note: string | null;
+  clientName: string | null;
+};
+
+// Deterministic (same client -> same color everywhere on the calendar, not just when
+// adjacent) so a stay that gets extended later still reads as "same client" at a glance.
+// Anonymous/untagged blocks skip this palette entirely and stay plain emerald-500.
+const CLIENT_COLOR_PALETTE = [
+  "bg-emerald-500",
+  "bg-blue-500",
+  "bg-purple-500",
+  "bg-rose-500",
+  "bg-cyan-600",
+  "bg-orange-600",
+  "bg-indigo-500",
+  "bg-fuchsia-500",
+];
+
+function colorForClient(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  }
+  return CLIENT_COLOR_PALETTE[hash % CLIENT_COLOR_PALETTE.length];
+}
 
 function dateKey(date: Date): string {
   const y = date.getFullYear();
@@ -34,6 +61,7 @@ export function MonthCalendar({
   currency,
   onToggleQuickBlocks,
   onCreateInvoice,
+  onTagClient,
 }: {
   month: Date;
   rules: AvailabilityRule[];
@@ -49,6 +77,7 @@ export function MonthCalendar({
     nightlyRate: number;
     amountPaid: number;
   }) => Promise<CreateInvoiceResult>;
+  onTagClient?: (dates: string[], clientName: string) => Promise<void>;
 }) {
   const grid = buildMonthGrid(month);
   const today = new Date();
@@ -141,10 +170,12 @@ export function MonthCalendar({
             // blocksOnDay directly (not hasRule/isAvailable) so a quick-marked block still
             // shows as occupied even on a day with no recurring availability rule.
             const isOccupied = inMonth && blocksOnDay.length > 0;
+            const dayClientName = (blocksOnDay as BlockWithMeta[]).find((block) => block.clientName)?.clientName ?? null;
+            const occupiedColorClass = dayClientName ? colorForClient(dayClientName) : "bg-emerald-500";
 
             let cellClass = "bg-transparent";
             if (inMonth) {
-              if (isOccupied) cellClass = "bg-emerald-500";
+              if (isOccupied) cellClass = occupiedColorClass;
               else if (!hasRule) cellClass = "bg-foreground/5";
             }
             if (isPendingDrag) {
@@ -166,7 +197,7 @@ export function MonthCalendar({
                         : "bg-red-500/20 text-red-700 dark:text-red-300"
                     }`}
                   >
-                    {isQuickBlocked ? "Occupé" : `${blocksOnDay.length} blocage${blocksOnDay.length > 1 ? "s" : ""}`}
+                    {dayClientName ?? (isQuickBlocked ? "Occupé" : `${blocksOnDay.length} blocage${blocksOnDay.length > 1 ? "s" : ""}`)}
                   </span>
                 ) : null}
               </>
@@ -202,12 +233,13 @@ export function MonthCalendar({
         </p>
       ) : null}
 
-      {invoicePromptDates && propertyId && currency && onCreateInvoice ? (
+      {invoicePromptDates && propertyId && currency && onCreateInvoice && onTagClient ? (
         <InvoicePrompt
           propertyId={propertyId}
           dates={invoicePromptDates}
           currency={currency}
           createAction={onCreateInvoice}
+          tagClientAction={onTagClient}
           onClose={() => setInvoicePromptDates(null)}
         />
       ) : null}

@@ -12,7 +12,9 @@ export function DayDetail({
   date: Date;
   rules: AvailabilityRule[];
   blocks: AvailabilityBlock[];
-  renderDeleteBlock: (block: AvailabilityBlock & { id: string; reason: string; note: string | null }) => React.ReactNode;
+  renderDeleteBlock: (
+    block: AvailabilityBlock & { id: string; reason: string; note: string | null; clientName?: string | null },
+  ) => React.ReactNode;
 }) {
   const windows = computeAvailableWindows(rules, blocks, date);
   const dayStart = new Date(date);
@@ -21,7 +23,7 @@ export function DayDetail({
   dayEnd.setHours(23, 59, 59, 999);
 
   const dayBlocks = blocks.filter(
-    (block): block is AvailabilityBlock & { id: string; reason: string; note: string | null } =>
+    (block): block is AvailabilityBlock & { id: string; reason: string; note: string | null; clientName?: string | null } =>
       block.start < dayEnd && block.end > dayStart,
   );
 
@@ -62,9 +64,11 @@ export function DayDetail({
               >
                 <div>
                   <p className="font-medium text-foreground">
-                    {AVAILABILITY_BLOCK_REASON_LABELS[
-                      block.reason as keyof typeof AVAILABILITY_BLOCK_REASON_LABELS
-                    ] ?? block.reason}
+                    {block.clientName ??
+                      AVAILABILITY_BLOCK_REASON_LABELS[
+                        block.reason as keyof typeof AVAILABILITY_BLOCK_REASON_LABELS
+                      ] ??
+                      block.reason}
                   </p>
                   <p className="text-xs text-foreground/60">
                     {timeFormatter.format(block.start)} – {timeFormatter.format(block.end)}

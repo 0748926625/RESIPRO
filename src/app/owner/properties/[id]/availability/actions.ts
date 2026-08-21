@@ -137,3 +137,23 @@ export async function setQuickBlocks(propertyId: string, dates: string[], occupi
 
   revalidatePath(`/owner/properties/${propertyId}/availability`);
 }
+
+// Tags the quick-marked blocks for these dates with a client name, purely so the calendar
+// can color-code consecutive stays by client (month-calendar.tsx) — called right after
+// marking dates occupied, whether or not the owner goes on to generate a full invoice.
+export async function tagQuickBlocksWithClient(propertyId: string, dates: string[], clientName: string) {
+  const trimmed = clientName.trim();
+  if (dates.length === 0 || !trimmed) return;
+
+  const supabase = await createClient();
+  const startsAtList = dates.map((date) => new Date(`${date}T00:00:00`).toISOString());
+
+  await supabase
+    .from("availability_blocks")
+    .update({ client_name: trimmed })
+    .eq("property_id", propertyId)
+    .eq("note", QUICK_BLOCK_NOTE)
+    .in("starts_at", startsAtList);
+
+  revalidatePath(`/owner/properties/${propertyId}/availability`);
+}
