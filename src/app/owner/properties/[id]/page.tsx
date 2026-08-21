@@ -29,13 +29,10 @@ const PHONE_VISIBILITY_LABELS: Record<string, string> = {
 
 export default async function EditPropertyPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ created?: string }>;
 }) {
   const { id } = await params;
-  const { created } = await searchParams;
   const supabase = await createClient();
 
   const [{ data: property }, { data: amenities }, { data: images }, { data: propertyAmenities }] =
@@ -65,7 +62,7 @@ export default async function EditPropertyPage({
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-8">
-      {created === "1" && canSubmit ? (
+      {canSubmit ? (
         <SubmitPrompt propertyId={id} propertyName={property.name} submitAction={submitForReview} />
       ) : null}
       <div className="flex items-center justify-between">
