@@ -62,6 +62,37 @@ export async function createExternalBooking(
     return { error: "Facture créée mais introuvable — rafraîchissez la page." };
   }
 
+  // An advance recorded on an off-platform invoice is real cash already received — mirror
+  // it into the same income_transactions/cash_transactions tables the finance pages read,
+  // exactly like a manually-recorded "other" income entry, so it shows up there without a
+  // separate reconciliation step.
+  if (parsed.data.amountPaid > 0 && user) {
+    const { data: income } = await supabase
+      .from("income_transactions")
+      .insert({
+        property_id: propertyId,
+        source: "other",
+        amount: parsed.data.amountPaid,
+        recorded_by: user.id,
+      })
+      .select("id")
+      .single();
+
+    if (income) {
+      await supabase.from("cash_transactions").insert({
+        property_id: propertyId,
+        type: "in",
+        amount: parsed.data.amountPaid,
+        reason: `Avance reçue — facture ${parsed.data.clientName}`,
+        performed_by: user.id,
+        related_income_id: income.id,
+      });
+    }
+
+    revalidatePath(`/owner/properties/${propertyId}/finance`);
+    revalidatePath(`/owner/finance`);
+  }
+
   return { id: created.id };
 }
 
