@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { PrintButton } from "@/components/calendar/print-button";
+import { DownloadPdfButton } from "@/components/invoice/download-pdf-button";
 import { InvoiceDocument } from "@/components/invoice/invoice-document";
 import { createClient } from "@/lib/supabase/server";
 
@@ -24,7 +24,7 @@ export default async function PublicInvoicePage({
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 print:py-0">
       <div className="flex items-center justify-end print:hidden">
-        <PrintButton />
+        <DownloadPdfButton invoiceId={invoiceId} />
       </div>
 
       <InvoiceDocument

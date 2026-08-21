@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { PrintButton } from "@/components/calendar/print-button";
+import { DownloadPdfButton } from "@/components/invoice/download-pdf-button";
 import { InvoiceDocument } from "@/components/invoice/invoice-document";
 import { RecordPaymentForm } from "@/components/invoice/record-payment-form";
 import { WhatsAppShareButton } from "@/components/invoice/whatsapp-share-button";
@@ -63,7 +63,7 @@ export default async function InvoiceDetailPage({
             remaining={totals.remaining}
             currency={invoice.currency}
           />
-          <PrintButton />
+          <DownloadPdfButton invoiceId={invoice.id} />
         </div>
       </div>
 
