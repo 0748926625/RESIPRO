@@ -9,6 +9,8 @@ import type { BookingStatus } from "@/lib/constants/statuses";
 import { formatBookingRange } from "@/lib/format/booking-range";
 import { createClient } from "@/lib/supabase/server";
 
+import { createDraftProperty } from "../properties/actions";
+
 export default async function OwnerDashboardPage() {
   const supabase = await createClient();
   const {
@@ -31,9 +33,11 @@ export default async function OwnerDashboardPage() {
         <p className="text-sm text-foreground/60">
           Créez votre première résidence pour voir vos indicateurs ici.
         </p>
-        <Link href="/owner/properties/new" className="w-fit rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground">
-          Nouvelle résidence
-        </Link>
+        <form action={createDraftProperty}>
+          <button type="submit" className="w-fit rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground">
+            Nouvelle résidence
+          </button>
+        </form>
       </div>
     );
   }

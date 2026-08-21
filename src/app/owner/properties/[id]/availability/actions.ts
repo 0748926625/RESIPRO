@@ -31,7 +31,7 @@ export async function createRule(
   }
 
   const supabase = await createClient();
-  // No .select() chained: see the note in owner/properties/new/actions.ts about
+  // No .select() chained: see the note in owner/properties/actions.ts about
   // INSERT ... RETURNING failing once the SELECT policy consults another table (here,
   // availability_rules_manage's ownership check against "properties"). We don't need
   // the new row's id back, so a plain insert is enough.

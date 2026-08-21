@@ -3,6 +3,8 @@ import Link from "next/link";
 import { PROPERTY_STATUSES } from "@/lib/constants/statuses";
 import { createClient } from "@/lib/supabase/server";
 
+import { createDraftProperty } from "./actions";
+
 const STATUS_LABELS: Record<string, string> = {
   [PROPERTY_STATUSES.DRAFT]: "Brouillon",
   [PROPERTY_STATUSES.PENDING_REVIEW]: "En attente de validation",
@@ -50,12 +52,14 @@ export default async function OwnerPropertiesPage({
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-foreground">Mes résidences</h1>
-        <Link
-          href="/owner/properties/new"
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        >
-          Nouvelle résidence
-        </Link>
+        <form action={createDraftProperty}>
+          <button
+            type="submit"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            Nouvelle résidence
+          </button>
+        </form>
       </div>
 
       {!properties || properties.length === 0 ? (

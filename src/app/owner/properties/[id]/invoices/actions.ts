@@ -58,7 +58,7 @@ export async function createExternalBooking(
 
   const { data: property } = await supabase.from("properties").select("currency").eq("id", propertyId).single();
 
-  // No .select() chained on the insert: see the note in owner/properties/new/actions.ts
+  // No .select() chained on the insert: see the note in owner/properties/actions.ts
   // about INSERT ... RETURNING 42501-ing once the SELECT policy consults another table
   // (here, external_bookings_owner_select's owns_property() check against "owners"). A
   // plain insert plus a follow-up select is the reliable pattern.
