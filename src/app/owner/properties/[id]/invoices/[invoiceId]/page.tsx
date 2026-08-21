@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { DownloadPdfButton } from "@/components/invoice/download-pdf-button";
 import { InvoiceDocument } from "@/components/invoice/invoice-document";
 import { RecordPaymentForm } from "@/components/invoice/record-payment-form";
-import { WhatsAppShareButton } from "@/components/invoice/whatsapp-share-button";
 import { computeInvoiceTotals } from "@/lib/services/external-booking.service";
 import { createClient } from "@/lib/supabase/server";
 
@@ -55,14 +54,6 @@ export default async function InvoiceDetailPage({
           ← Factures
         </Link>
         <div className="flex items-center gap-2">
-          <WhatsAppShareButton
-            invoiceId={invoice.id}
-            propertyName={property.name}
-            clientName={invoice.client_name}
-            total={totals.total}
-            remaining={totals.remaining}
-            currency={invoice.currency}
-          />
           <DownloadPdfButton invoiceId={invoice.id} />
         </div>
       </div>
