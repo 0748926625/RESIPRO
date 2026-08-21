@@ -238,7 +238,9 @@ export default async function ResidenceDetailPage({
         allowsHalfDay={property.allows_half_day}
         mode="classic"
         title="Réserver"
-        priceLabel={`${property.base_price} ${property.currency}`}
+        priceLabel={`${property.base_price} ${property.currency} / nuit`}
+        basePrice={property.base_price}
+        currency={property.currency}
         submitLabel="Réserver ce créneau"
       />
 
@@ -293,6 +295,8 @@ export default async function ResidenceDetailPage({
             mode="shared"
             title="Créer une demande de partage"
             priceLabel={`${Math.round(property.base_price / 2)} ${property.currency} / personne`}
+            basePrice={property.base_price}
+            currency={property.currency}
             submitLabel="Créer la demande"
           />
         </div>
