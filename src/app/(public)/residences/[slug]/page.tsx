@@ -219,83 +219,84 @@ export default async function ResidenceDetailPage({
         </div>
       ) : null}
 
-      {viewerData.user ? (
-        <>
+      {!viewerData.user ? (
+        <div className="flex flex-col gap-1 rounded-lg border border-foreground/10 bg-foreground/5 p-3 text-sm">
+          <p className="text-foreground/80">
+            Vous pouvez consulter les disponibilités librement.{" "}
+            <Link href={`/login?next=/residences/${slug}`} className="underline">
+              Connectez-vous
+            </Link>{" "}
+            pour finaliser une réservation.
+          </p>
+        </div>
+      ) : null}
+
+      <BookingCalendar
+        action={requestClassicBooking.bind(null, property.id)}
+        blocks={activeBlocks}
+        checkInTime={checkInTime}
+        allowsHalfDay={property.allows_half_day}
+        mode="classic"
+        title="Réserver"
+        priceLabel={`${property.base_price} ${property.currency}`}
+        submitLabel="Réserver ce créneau"
+      />
+
+      {property.allows_half_day ? (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-foreground">Réservation partagée à deux</h2>
+          <p className="text-xs text-foreground/60">
+            Une demi-journée réservée seule attend un deuxième client pour l&apos;autre demi-journée de la même
+            journée.
+          </p>
+          {joinableRequests.length > 0 ? (
+            <ul className="flex flex-col gap-2">
+              {joinableRequests.map((request) => (
+                <li
+                  key={request.id}
+                  className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="text-foreground/80">
+                    Un participant a réservé{" "}
+                    {request.requestedStart.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}{" "}
+                    – {request.requestedEnd.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                  </span>
+                  <form
+                    action={joinSharedBooking.bind(
+                      null,
+                      request.id,
+                      request.candidate.start.toISOString(),
+                      request.candidate.end.toISOString(),
+                    )}
+                  >
+                    <button
+                      type="submit"
+                      className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                    >
+                      Rejoindre {request.candidate.start.toLocaleTimeString("fr-FR", { timeStyle: "short" })}–
+                      {request.candidate.end.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-foreground/60">
+              Aucune demande de partage en attente pour cette résidence pour le moment.
+            </p>
+          )}
           <BookingCalendar
-            action={requestClassicBooking.bind(null, property.id)}
+            action={requestSharedBooking.bind(null, property.id)}
             blocks={activeBlocks}
             checkInTime={checkInTime}
             allowsHalfDay={property.allows_half_day}
-            mode="classic"
-            title="Réserver"
-            priceLabel={`${property.base_price} ${property.currency}`}
-            submitLabel="Réserver ce créneau"
+            mode="shared"
+            title="Créer une demande de partage"
+            priceLabel={`${Math.round(property.base_price / 2)} ${property.currency} / personne`}
+            submitLabel="Créer la demande"
           />
-
-          {property.allows_half_day ? (
-            <div className="flex flex-col gap-3">
-              <h2 className="text-sm font-medium text-foreground">Réservation partagée à deux</h2>
-              <p className="text-xs text-foreground/60">
-                Une demi-journée réservée seule attend un deuxième client pour l&apos;autre demi-journée de la
-                même journée.
-              </p>
-              {joinableRequests.length > 0 ? (
-                <ul className="flex flex-col gap-2">
-                  {joinableRequests.map((request) => (
-                    <li
-                      key={request.id}
-                      className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <span className="text-foreground/80">
-                        Un participant a réservé{" "}
-                        {request.requestedStart.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}{" "}
-                        – {request.requestedEnd.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
-                      </span>
-                      <form
-                        action={joinSharedBooking.bind(
-                          null,
-                          request.id,
-                          request.candidate.start.toISOString(),
-                          request.candidate.end.toISOString(),
-                        )}
-                      >
-                        <button
-                          type="submit"
-                          className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
-                        >
-                          Rejoindre {request.candidate.start.toLocaleTimeString("fr-FR", { timeStyle: "short" })}–
-                          {request.candidate.end.toLocaleTimeString("fr-FR", { timeStyle: "short" })}
-                        </button>
-                      </form>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-foreground/60">
-                  Aucune demande de partage en attente pour cette résidence pour le moment.
-                </p>
-              )}
-              <BookingCalendar
-                action={requestSharedBooking.bind(null, property.id)}
-                blocks={activeBlocks}
-                checkInTime={checkInTime}
-                allowsHalfDay={property.allows_half_day}
-                mode="shared"
-                title="Créer une demande de partage"
-                priceLabel={`${Math.round(property.base_price / 2)} ${property.currency} / personne`}
-                submitLabel="Créer la demande"
-              />
-            </div>
-          ) : null}
-        </>
-      ) : (
-        <div className="flex flex-col gap-2 rounded-lg border border-foreground/10 p-4 text-sm">
-          <p className="text-foreground/80">Connectez-vous pour réserver cette résidence.</p>
-          <Link href={`/login?next=/residences/${slug}`} className="w-fit underline">
-            Se connecter
-          </Link>
         </div>
-      )}
+      ) : null}
 
       <p className="text-xs text-foreground/50">
         La réservation et le contact du gérant se font via la plateforme — vos coordonnées ne sont

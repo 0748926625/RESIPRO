@@ -85,6 +85,13 @@ export async function requestSharedBooking(
 
 export async function joinSharedBooking(requestId: string, startsAtIso: string, endsAtIso: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   const { error } = await supabase.rpc("join_shared_booking_request", {
     p_request_id: requestId,

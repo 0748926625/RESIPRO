@@ -4,6 +4,7 @@ import { getViewer } from "@/lib/auth/session";
 import { dashboardPathForRole } from "@/lib/auth/redirect-by-role";
 
 import { LoginForm } from "./login-form";
+import { MagicLinkForm } from "./magic-link-form";
 
 export default async function LoginPage({
   searchParams,
@@ -21,7 +22,16 @@ export default async function LoginPage({
     <div className="mx-auto flex min-h-[70vh] max-w-sm flex-1 flex-col justify-center gap-6 px-4">
       <div>
         <h1 className="text-xl font-semibold text-foreground">Connexion</h1>
-        <p className="text-sm text-foreground/60">Accédez à votre espace ResiPro.</p>
+        <p className="text-sm text-foreground/60">
+          Un email suffit — aucun mot de passe à retenir.
+        </p>
+      </div>
+      <MagicLinkForm next={next} />
+
+      <div className="flex items-center gap-3 text-xs text-foreground/40">
+        <span className="h-px flex-1 bg-foreground/10" />
+        ou avec un mot de passe
+        <span className="h-px flex-1 bg-foreground/10" />
       </div>
       <LoginForm next={next} />
     </div>
