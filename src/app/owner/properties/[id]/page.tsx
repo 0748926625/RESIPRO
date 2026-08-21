@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { BrandingUploader } from "@/components/property/branding-uploader";
 import { PhotoManager } from "@/components/property/photo-manager";
 import { PropertyForm } from "@/components/property/property-form";
 import { PROPERTY_STATUSES } from "@/lib/constants/statuses";
 import { storagePathFromPublicUrl } from "@/lib/services/property.service";
 import { createClient } from "@/lib/supabase/server";
 
-import { deletePropertyImage, submitForReview, updateProperty } from "./actions";
+import { deletePropertyImage, setPropertyBranding, submitForReview, updateProperty } from "./actions";
 
 const STATUS_LABELS: Record<string, string> = {
   [PROPERTY_STATUSES.DRAFT]: "Brouillon",
@@ -86,6 +87,31 @@ export default async function EditPropertyPage({
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-foreground">Photos</h2>
         <PhotoManager propertyId={id} images={imagesWithActions} />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-sm font-medium text-foreground">Logo &amp; signature</h2>
+        <p className="text-xs text-foreground/60">
+          Utilisés sur les factures de cette résidence (§ réservations hors plateforme).
+        </p>
+        <div className="flex flex-wrap gap-6">
+          <BrandingUploader
+            propertyId={id}
+            field="logo_url"
+            currentUrl={property.logo_url}
+            label="Logo"
+            shape="square"
+            action={setPropertyBranding}
+          />
+          <BrandingUploader
+            propertyId={id}
+            field="signature_url"
+            currentUrl={property.signature_url}
+            label="Signature"
+            shape="wide"
+            action={setPropertyBranding}
+          />
+        </div>
       </section>
 
       <section className="flex flex-col gap-3">

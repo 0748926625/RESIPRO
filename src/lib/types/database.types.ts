@@ -916,12 +916,14 @@ export type Database = {
           house_rules: string | null
           id: string
           latitude: number | null
+          logo_url: string | null
           longitude: number | null
           manager_phone_visibility: Database["public"]["Enums"]["manager_phone_visibility"]
           name: string
           neighborhood: string | null
           owner_id: string
           property_type: string
+          signature_url: string | null
           slug: string
           status: Database["public"]["Enums"]["property_status"]
           updated_at: string
@@ -941,12 +943,14 @@ export type Database = {
           house_rules?: string | null
           id?: string
           latitude?: number | null
+          logo_url?: string | null
           longitude?: number | null
           manager_phone_visibility?: Database["public"]["Enums"]["manager_phone_visibility"]
           name: string
           neighborhood?: string | null
           owner_id: string
           property_type?: string
+          signature_url?: string | null
           slug: string
           status?: Database["public"]["Enums"]["property_status"]
           updated_at?: string
@@ -966,12 +970,14 @@ export type Database = {
           house_rules?: string | null
           id?: string
           latitude?: number | null
+          logo_url?: string | null
           longitude?: number | null
           manager_phone_visibility?: Database["public"]["Enums"]["manager_phone_visibility"]
           name?: string
           neighborhood?: string | null
           owner_id?: string
           property_type?: string
+          signature_url?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["property_status"]
           updated_at?: string

@@ -83,3 +83,16 @@ export async function deletePropertyImage(propertyId: string, imageId: string, p
 
   revalidatePath(`/owner/properties/${propertyId}`);
 }
+
+export async function setPropertyBranding(
+  propertyId: string,
+  field: "logo_url" | "signature_url",
+  url: string | null,
+) {
+  const supabase = await createClient();
+  const update = field === "logo_url" ? { logo_url: url } : { signature_url: url };
+  await supabase.from("properties").update(update).eq("id", propertyId);
+
+  revalidatePath(`/owner/properties/${propertyId}`);
+  revalidatePath(`/owner/properties/${propertyId}/invoices`);
+}
