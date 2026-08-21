@@ -9,6 +9,7 @@ import { addDays, startOfDay } from "@/lib/services/calendar.service";
 import { createClient } from "@/lib/supabase/server";
 import { AVAILABILITY_BLOCK_REASON_LABELS, DAY_OF_WEEK_LABELS } from "@/lib/validations/availability.schema";
 
+import { createExternalBooking } from "../invoices/actions";
 import { createBlock, createRule, deleteBlock, deleteRule, setQuickBlocks } from "./actions";
 
 const timeFormatter = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
@@ -24,7 +25,7 @@ export default async function PropertyAvailabilityPage({
   const { view = "month", month: monthParam, date: dateParam } = await searchParams;
 
   const supabase = await createClient();
-  const { data: property } = await supabase.from("properties").select("id, name").eq("id", id).single();
+  const { data: property } = await supabase.from("properties").select("id, name, currency").eq("id", id).single();
 
   if (!property) {
     notFound();
@@ -71,14 +72,20 @@ export default async function PropertyAvailabilityPage({
   const boundCreateRule = createRule.bind(null, id);
   const boundCreateBlock = createBlock.bind(null, id);
   const boundSetQuickBlocks = setQuickBlocks.bind(null, id);
+  const boundCreateExternalBooking = createExternalBooking.bind(null, id);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-8">
-      <div>
-        <Link href={`/owner/properties/${id}`} className="text-xs text-foreground/60 underline">
-          ← {property.name}
+      <div className="flex items-start justify-between">
+        <div>
+          <Link href={`/owner/properties/${id}`} className="text-xs text-foreground/60 underline">
+            ← {property.name}
+          </Link>
+          <h1 className="text-xl font-semibold text-foreground">Calendrier &amp; disponibilités</h1>
+        </div>
+        <Link href={`/owner/properties/${id}/invoices`} className="text-sm underline">
+          Factures
         </Link>
-        <h1 className="text-xl font-semibold text-foreground">Calendrier &amp; disponibilités</h1>
       </div>
 
       <div className="flex items-center gap-4 text-sm">
@@ -144,7 +151,10 @@ export default async function PropertyAvailabilityPage({
             rules={rules}
             blocks={blocks}
             basePath={basePath}
+            propertyId={id}
+            currency={property.currency}
             onToggleQuickBlocks={boundSetQuickBlocks}
+            onCreateInvoice={boundCreateExternalBooking}
           />
         </div>
       )}

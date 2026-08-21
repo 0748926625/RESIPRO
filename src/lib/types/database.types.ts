@@ -472,6 +472,63 @@ export type Database = {
           },
         ]
       }
+      external_bookings: {
+        Row: {
+          amount_paid: number
+          client_name: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          ends_at: string
+          id: string
+          nightly_rate: number
+          note: string | null
+          property_id: string
+          starts_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          client_name: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          ends_at: string
+          id?: string
+          nightly_rate: number
+          note?: string | null
+          property_id: string
+          starts_at: string
+        }
+        Update: {
+          amount_paid?: number
+          client_name?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          ends_at?: string
+          id?: string
+          nightly_rate?: number
+          note?: string | null
+          property_id?: string
+          starts_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_bookings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_bookings_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       income_transactions: {
         Row: {
           amount: number

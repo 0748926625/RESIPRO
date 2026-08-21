@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 
+import type { CreateInvoiceResult } from "@/app/owner/properties/[id]/invoices/actions";
 import {
   classifyDay,
   type AvailabilityBlock,
@@ -10,6 +11,8 @@ import {
 } from "@/lib/services/availability.service";
 import { buildMonthGrid, isSameDay } from "@/lib/services/calendar.service";
 import { QUICK_BLOCK_NOTE } from "@/lib/validations/availability.schema";
+
+import { InvoicePrompt } from "./invoice-prompt";
 
 const WEEKDAY_LABELS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
@@ -27,13 +30,25 @@ export function MonthCalendar({
   rules,
   blocks,
   basePath,
+  propertyId,
+  currency,
   onToggleQuickBlocks,
+  onCreateInvoice,
 }: {
   month: Date;
   rules: AvailabilityRule[];
   blocks: BlockWithMeta[];
   basePath: string;
+  propertyId?: string;
+  currency?: string;
   onToggleQuickBlocks?: (dates: string[], occupied: boolean) => Promise<void>;
+  onCreateInvoice?: (input: {
+    clientName: string;
+    startsAt: string;
+    endsAt: string;
+    nightlyRate: number;
+    amountPaid: number;
+  }) => Promise<CreateInvoiceResult>;
 }) {
   const grid = buildMonthGrid(month);
   const today = new Date();
@@ -42,6 +57,7 @@ export function MonthCalendar({
   const [dragDates, setDragDates] = useState<string[]>([]);
   const [dragAction, setDragAction] = useState<"add" | "remove" | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [invoicePromptDates, setInvoicePromptDates] = useState<string[] | null>(null);
   const draggingRef = useRef(false);
 
   const quickBlockedDates = new Set(
@@ -55,6 +71,9 @@ export function MonthCalendar({
       startTransition(async () => {
         await onToggleQuickBlocks(dates, occupied);
       });
+      if (occupied && onCreateInvoice) {
+        setInvoicePromptDates(dates);
+      }
     }
     draggingRef.current = false;
     setDragDates([]);
@@ -169,6 +188,16 @@ export function MonthCalendar({
           Touchez un jour pour le marquer occupé, ou glissez pour en marquer plusieurs d&apos;un coup. Touchez à
           nouveau un jour déjà marqué pour le libérer.
         </p>
+      ) : null}
+
+      {invoicePromptDates && propertyId && currency && onCreateInvoice ? (
+        <InvoicePrompt
+          propertyId={propertyId}
+          dates={invoicePromptDates}
+          currency={currency}
+          createAction={onCreateInvoice}
+          onClose={() => setInvoicePromptDates(null)}
+        />
       ) : null}
     </div>
   );

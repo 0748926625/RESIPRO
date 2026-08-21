@@ -66,6 +66,9 @@ export default async function EditPropertyPage({
             <Link href={`/owner/properties/${id}/finance`} className="text-xs text-foreground underline">
               Finances
             </Link>
+            <Link href={`/owner/properties/${id}/invoices`} className="text-xs text-foreground underline">
+              Factures
+            </Link>
           </div>
         </div>
         {canSubmit ? (

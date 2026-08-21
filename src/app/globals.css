@@ -24,3 +24,12 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Printing an invoice (owner/properties/[id]/invoices/[invoiceId]) should show just the
+   document, not the app chrome. */
+@media print {
+  header,
+  nav {
+    display: none;
+  }
+}
