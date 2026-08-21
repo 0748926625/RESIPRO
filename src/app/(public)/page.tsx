@@ -8,9 +8,11 @@ export default async function HomePage() {
   const { data: amenities } = await supabase.from("amenities").select("id, label").order("label");
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-16">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-12 sm:py-16">
       <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-3xl font-semibold text-foreground">Residence Pro</h1>
+        <h1 className="text-3xl font-semibold text-foreground">
+          Trouvez votre <span className="text-primary">résidence meublée</span>
+        </h1>
         <p className="text-sm text-foreground/60">
           Résidences meublées à réserver — seul, ou à deux en réservation partagée.
         </p>
@@ -19,7 +21,7 @@ export default async function HomePage() {
 
       <p className="text-center text-sm text-foreground/60">
         Vous ne trouvez pas ce qu&apos;il vous faut ?{" "}
-        <Link href="/intermediation" className="underline">
+        <Link href="/intermediation" className="font-medium text-primary underline">
           Faites une demande personnalisée
         </Link>
         .

@@ -122,7 +122,7 @@ export default async function PropertyFinancePage({
             key={value}
             href={`${basePath}?period=${value}`}
             className={`rounded-full px-3 py-1 ${
-              period === value ? "bg-foreground text-background" : "border border-foreground/15 text-foreground/70"
+              period === value ? "bg-primary text-primary-foreground" : "border border-foreground/15 text-foreground/70"
             }`}
           >
             {label}

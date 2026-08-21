@@ -23,7 +23,7 @@ export function SearchForm({
   const selected = new Set(defaultValues.amenities ?? []);
 
   return (
-    <form action="/residences" method="GET" className="flex flex-col gap-4 rounded-lg border border-foreground/10 p-4">
+    <form action="/residences" method="GET" className="flex flex-col gap-4 rounded-xl border border-foreground/10 bg-card p-4 shadow-sm">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
         <div className="flex flex-col gap-1 sm:col-span-2">
           <label htmlFor="city" className="text-xs font-medium text-foreground/70">
@@ -35,7 +35,7 @@ export function SearchForm({
             type="text"
             defaultValue={defaultValues.city}
             placeholder="Ex. Cocody"
-            className="rounded-md border border-foreground/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-foreground/40"
+            className="min-h-11 rounded-md border border-foreground/15 bg-transparent px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -65,7 +65,7 @@ export function SearchForm({
             type="number"
             min={1}
             defaultValue={defaultValues.minCapacity}
-            className="rounded-md border border-foreground/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-foreground/40"
+            className="min-h-11 rounded-md border border-foreground/15 bg-transparent px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </div>
       </div>
@@ -80,7 +80,7 @@ export function SearchForm({
           type="number"
           min={0}
           defaultValue={defaultValues.maxPrice}
-          className="rounded-md border border-foreground/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-foreground/40"
+          className="min-h-11 rounded-md border border-foreground/15 bg-transparent px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
       </div>
 
@@ -105,7 +105,7 @@ export function SearchForm({
 
       <button
         type="submit"
-        className="w-fit rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background"
+        className="min-h-11 w-fit rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground active:opacity-80"
       >
         Rechercher
       </button>

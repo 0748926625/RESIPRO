@@ -36,7 +36,7 @@ export default async function OwnerPropertiesPage() {
         <h1 className="text-xl font-semibold text-foreground">Mes résidences</h1>
         <Link
           href="/owner/properties/new"
-          className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           Nouvelle résidence
         </Link>

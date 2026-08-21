@@ -68,7 +68,7 @@ export default async function AdminPropertiesPage({
             href={`/admin/properties?status=${filter.value}`}
             className={`rounded-full px-3 py-1 ${
               activeFilter === filter.value
-                ? "bg-foreground text-background"
+                ? "bg-primary text-primary-foreground"
                 : "border border-foreground/15 text-foreground/70"
             }`}
           >
@@ -95,7 +95,7 @@ export default async function AdminPropertiesPage({
                 {property.status === "pending_review" ? (
                   <>
                     <form action={approveProperty.bind(null, property.id)}>
-                      <button type="submit" className="rounded-md bg-foreground px-3 py-1.5 text-xs text-background">
+                      <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground">
                         Approuver
                       </button>
                     </form>
@@ -115,7 +115,7 @@ export default async function AdminPropertiesPage({
                 ) : null}
                 {property.status === "suspended" ? (
                   <form action={reinstateProperty.bind(null, property.id)}>
-                    <button type="submit" className="rounded-md bg-foreground px-3 py-1.5 text-xs text-background">
+                    <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground">
                       Réactiver
                     </button>
                   </form>

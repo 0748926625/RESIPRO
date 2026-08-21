@@ -32,6 +32,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         roleLabel="Super Admin"
         notificationsHref="/admin/notifications"
         unreadCount={unreadCount}
+        navItems={NAV_ITEMS}
       />
       <RoleNav items={NAV_ITEMS} />
       <div className="flex flex-1 flex-col">{children}</div>

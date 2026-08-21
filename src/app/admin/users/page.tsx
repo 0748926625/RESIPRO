@@ -66,7 +66,7 @@ export default async function AdminUsersPage() {
                 </form>
               ) : (
                 <form action={activateUser.bind(null, profile.id)}>
-                  <button type="submit" className="rounded-md bg-foreground px-3 py-1.5 text-xs text-background">
+                  <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground">
                     Réactiver
                   </button>
                 </form>

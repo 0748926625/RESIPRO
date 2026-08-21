@@ -81,7 +81,7 @@ export function PhotoManager({
                 </button>
               </form>
               {image.is_cover ? (
-                <span className="absolute left-1 top-1 rounded bg-foreground px-2 py-0.5 text-[10px] text-background">
+                <span className="absolute left-1 top-1 rounded bg-primary px-2 py-0.5 text-[10px] text-primary-foreground">
                   Couverture
                 </span>
               ) : null}

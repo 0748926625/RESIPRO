@@ -106,7 +106,7 @@ export function MonthCalendar({
             type="button"
             onClick={() => setMarkMode((value) => !value)}
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              markMode ? "bg-foreground text-background" : "border border-foreground/20 text-foreground/70"
+              markMode ? "bg-primary text-primary-foreground" : "border border-foreground/20 text-foreground/70"
             }`}
           >
             {markMode ? "Marquage rapide activé" : "Marquer des dates occupées"}

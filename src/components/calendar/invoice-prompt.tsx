@@ -139,7 +139,7 @@ export function InvoicePrompt({
       <button
         type="submit"
         disabled={isPending}
-        className="w-fit rounded-md bg-foreground px-4 py-2 text-xs font-medium text-background disabled:opacity-60"
+        className="w-fit rounded-md bg-primary px-4 py-2 text-xs font-medium text-primary-foreground disabled:opacity-60"
       >
         {isPending ? "Enregistrement…" : "Enregistrer la facture"}
       </button>

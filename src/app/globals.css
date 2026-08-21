@@ -1,28 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf7f2;
+  --foreground: #241c16;
+  --card: #ffffff;
+  --primary: #c2603a;
+  --primary-foreground: #fffaf6;
+  --accent: #2f5d4e;
+  --accent-foreground: #f2fbf7;
+  --success: #2f7d5b;
+  --danger: #c1432e;
+  --warning: #b8791e;
+  --muted: #f1e8de;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1b1815;
+    --foreground: #f3ece4;
+    --card: #241f1a;
+    --primary: #e0824f;
+    --primary-foreground: #201209;
+    --accent: #6fbfa0;
+    --accent-foreground: #0d1913;
+    --success: #4caf83;
+    --danger: #e5705a;
+    --warning: #e0a63e;
+    --muted: #2a241e;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
 /* Printing an invoice (owner/properties/[id]/invoices/[invoiceId]) should show just the

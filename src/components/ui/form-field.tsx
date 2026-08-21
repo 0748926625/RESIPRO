@@ -28,10 +28,10 @@ export function FormField({
         defaultValue={defaultValue}
         required={required}
         aria-invalid={errors && errors.length > 0 ? true : undefined}
-        className="rounded-md border border-foreground/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-foreground/40"
+        className="min-h-11 rounded-md border border-foreground/15 bg-transparent px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
       />
       {errors?.map((error) => (
-        <p key={error} className="text-xs text-red-600">
+        <p key={error} className="text-xs text-danger">
           {error}
         </p>
       ))}

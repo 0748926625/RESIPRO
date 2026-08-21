@@ -63,7 +63,7 @@ export default async function AdminOwnersPage() {
                 </form>
               ) : (
                 <form action={verifyOwner.bind(null, owner.id)}>
-                  <button type="submit" className="rounded-md bg-foreground px-3 py-1.5 text-xs text-background">
+                  <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground">
                     Vérifier
                   </button>
                 </form>

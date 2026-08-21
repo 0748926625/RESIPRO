@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Gestion de résidences meublées et marketplace de réservation partagée.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#0f766e",
+    background_color: "#fbf7f2",
+    theme_color: "#c2603a",
     lang: "fr",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

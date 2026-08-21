@@ -105,7 +105,7 @@ export default async function AdminIntermediationPage({
             href={`/admin/intermediation?status=${filter.value}`}
             className={`rounded-full px-3 py-1 ${
               activeFilter === filter.value
-                ? "bg-foreground text-background"
+                ? "bg-primary text-primary-foreground"
                 : "border border-foreground/15 text-foreground/70"
             }`}
           >
@@ -144,7 +144,7 @@ export default async function AdminIntermediationPage({
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {request.status === "new" ? (
                   <form action={markContacted.bind(null, request.id)}>
-                    <button type="submit" className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background">
+                    <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
                       Marquer contacté
                     </button>
                   </form>
@@ -168,7 +168,7 @@ export default async function AdminIntermediationPage({
 
                 {request.status === "residence_found" ? (
                   <form action={markClientReferred.bind(null, request.id)}>
-                    <button type="submit" className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background">
+                    <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
                       Marquer mis en relation
                     </button>
                   </form>

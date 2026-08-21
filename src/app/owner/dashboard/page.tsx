@@ -30,7 +30,7 @@ export default async function OwnerDashboardPage() {
         <p className="text-sm text-foreground/60">
           Créez votre première résidence pour voir vos indicateurs ici.
         </p>
-        <Link href="/owner/properties/new" className="w-fit rounded-md bg-foreground px-4 py-2 text-sm text-background">
+        <Link href="/owner/properties/new" className="w-fit rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground">
           Nouvelle résidence
         </Link>
       </div>

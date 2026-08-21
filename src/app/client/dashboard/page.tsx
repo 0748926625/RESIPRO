@@ -119,7 +119,7 @@ export default async function ClientDashboardPage() {
       </section>
 
       <section className="flex flex-wrap gap-3 text-sm">
-        <Link href="/residences" className="rounded-md bg-foreground px-4 py-2 text-background">
+        <Link href="/residences" className="rounded-md bg-primary px-4 py-2 text-primary-foreground">
           Chercher une résidence
         </Link>
         <Link href="/client/shared-bookings" className="rounded-md border border-foreground/10 px-4 py-2">

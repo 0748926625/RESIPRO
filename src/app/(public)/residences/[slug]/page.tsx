@@ -245,7 +245,7 @@ export default async function ResidenceDetailPage({
                         >
                           <button
                             type="submit"
-                            className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                            className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
                           >
                             Rejoindre {candidate.start.toLocaleTimeString("fr-FR", { timeStyle: "short" })}–
                             {candidate.end.toLocaleTimeString("fr-FR", { timeStyle: "short" })}

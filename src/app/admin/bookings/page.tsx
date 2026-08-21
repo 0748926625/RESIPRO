@@ -56,7 +56,7 @@ export default async function AdminBookingsPage() {
                     <form action={markReservedWithOwner.bind(null, booking.id, "/admin/bookings")}>
                       <button
                         type="submit"
-                        className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                        className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
                       >
                         Réserver auprès du propriétaire
                       </button>

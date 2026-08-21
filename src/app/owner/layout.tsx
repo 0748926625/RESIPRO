@@ -28,6 +28,7 @@ export default async function OwnerLayout({ children }: { children: ReactNode })
         roleLabel="Propriétaire / gérant"
         notificationsHref="/owner/notifications"
         unreadCount={unreadCount}
+        navItems={NAV_ITEMS}
       />
       <RoleNav items={NAV_ITEMS} />
       <div className="flex flex-1 flex-col">{children}</div>

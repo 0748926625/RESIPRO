@@ -73,7 +73,7 @@ export default async function ClientPaymentsPage() {
                 <form action={submitPayment.bind(null, payment.id, "/client/payments")}>
                   <button
                     type="submit"
-                    className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                    className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
                   >
                     J&apos;ai effectué le paiement
                   </button>
@@ -83,7 +83,7 @@ export default async function ClientPaymentsPage() {
                 <form action={resubmitPayment.bind(null, payment.id, "/client/payments")}>
                   <button
                     type="submit"
-                    className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                    className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
                   >
                     Renvoyer
                   </button>
