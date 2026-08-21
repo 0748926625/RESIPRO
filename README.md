@@ -1,9 +1,8 @@
-# Residence Pro
+# ResiPro
 
 PWA de gestion de résidences meublées : logiciel professionnel pour propriétaires/gérants
 + marketplace de réservation pour les clients, avec un système original de **réservation
-partagée à deux personnes maximum par créneau**. Nom temporaire, voir [Configuration
-plateforme](#configuration-plateforme).
+partagée à deux personnes maximum par créneau**.
 
 Cahier des charges complet : [`PROMPT.txt`](./PROMPT.txt).
 
@@ -192,8 +191,9 @@ codés en dur dans l'application (§31, §32).
 
 ## PWA
 
-`src/app/manifest.ts` et `public/sw.js` rendent l'app installable (icônes générées via
-`next/og`, aucun fichier image à maintenir). Le service worker ne met en cache que les
+`src/app/manifest.ts` et `public/sw.js` rendent l'app installable. Icônes générées depuis
+`public/icon-source.png` (le logo) via `sharp` — `src/app/icon.png`, `src/app/apple-icon.png`,
+`public/icon-192.png`, `public/icon-512.png`. Le service worker ne met en cache que les
 fichiers statiques `_next/static/*` et une page `/offline` de secours pour la navigation
 — jamais les données de réservation, paiement ou disponibilité, qui doivent toujours
 venir du serveur (§26, §40). Pour tester l'installation, lancez `npm run build && npm run

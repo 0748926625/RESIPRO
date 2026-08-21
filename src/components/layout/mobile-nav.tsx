@@ -50,7 +50,7 @@ export function MobileNav({ items }: { items: { label: string; href: string }[] 
           />
           <nav className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col gap-1 bg-card p-4 shadow-xl">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-semibold text-primary">Residence Pro</span>
+              <span className="text-sm font-semibold text-primary">ResiPro</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}

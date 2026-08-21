@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Residence Pro",
-    template: "%s · Residence Pro",
+    default: "ResiPro",
+    template: "%s · ResiPro",
   },
   description:
     "Gestion de résidences meublées et marketplace de réservation, avec réservation partagée par créneaux.",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Residence Pro",
+    title: "ResiPro",
   },
 };
 

@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Residence Pro",
-    short_name: "ResidencePro",
+    name: "ResiPro",
+    short_name: "ResiPro",
     description: "Gestion de résidences meublées et marketplace de réservation partagée.",
     start_url: "/",
     display: "standalone",

@@ -20,7 +20,7 @@ export default async function AdminSettingsPage() {
       </div>
       <SettingsForm
         defaultValues={{
-          platformName: asString(settings.platform_name, "Residence Pro"),
+          platformName: asString(settings.platform_name, "ResiPro"),
           contactEmail: asString(settings.contact_email),
           contactPhone: asString(settings.contact_phone),
           paymentOperator: asString(settings.payment_operator),

@@ -32,7 +32,7 @@ export default async function IntermediationPage() {
         <h1 className="text-xl font-semibold text-foreground">Demande personnalisée</h1>
         <p className="text-sm text-foreground/60">
           Vous ne trouvez pas ce qu&apos;il vous faut dans la recherche ? Décrivez votre besoin —
-          l&apos;équipe Residence Pro cherche pour vous et vous met en relation (§15).
+          l&apos;équipe ResiPro cherche pour vous et vous met en relation (§15).
         </p>
       </div>
       <IntermediationForm defaultFullName={defaultFullName} defaultPhone={defaultPhone} />

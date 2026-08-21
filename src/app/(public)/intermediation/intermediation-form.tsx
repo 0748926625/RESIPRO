@@ -23,7 +23,7 @@ export function IntermediationForm({
       <div className="rounded-lg border border-foreground/10 p-4 text-sm">
         <p className="font-medium text-foreground">Votre demande a été envoyée.</p>
         <p className="text-foreground/60">
-          Un membre de l&apos;équipe Residence Pro vous contactera prochainement.
+          Un membre de l&apos;équipe ResiPro vous contactera prochainement.
         </p>
       </div>
     );

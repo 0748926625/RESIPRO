@@ -11,7 +11,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-foreground/10 bg-card px-4 py-3">
         <Link href="/" className="text-base font-semibold text-primary">
-          Residence Pro
+          ResiPro
         </Link>
         <div className="flex items-center gap-2 text-sm">
           {viewer.role === "visitor" ? (

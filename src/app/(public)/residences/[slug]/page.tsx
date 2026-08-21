@@ -54,7 +54,7 @@ export async function generateMetadata({
   }
 
   const description =
-    property.description?.slice(0, 160) ?? `${property.name} à ${property.city} — Residence Pro`;
+    property.description?.slice(0, 160) ?? `${property.name} à ${property.city} — ResiPro`;
 
   return {
     title: property.name,
