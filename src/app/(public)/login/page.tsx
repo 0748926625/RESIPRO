@@ -23,7 +23,8 @@ export default async function LoginPage({
       <div>
         <h1 className="text-xl font-semibold text-foreground">Connexion</h1>
         <p className="text-sm text-foreground/60">
-          Un email suffit — aucun mot de passe à retenir.
+          Un email suffit — aucun mot de passe à retenir. Un compte est créé automatiquement à
+          la première connexion.
         </p>
       </div>
       <MagicLinkForm next={next} />

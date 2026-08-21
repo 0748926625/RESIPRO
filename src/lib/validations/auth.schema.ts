@@ -10,6 +10,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 
 export const magicLinkSchema = z.object({
   email: z.string().min(1, "L'email est requis.").email("Adresse email invalide."),
+  role: z.enum(["client", "owner"]).default("client"),
   next: z.string().optional(),
 });
 

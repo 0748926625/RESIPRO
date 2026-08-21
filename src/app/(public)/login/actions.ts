@@ -18,16 +18,19 @@ export type MagicLinkActionState = {
   success?: boolean;
 };
 
-// Passwordless: one email field, no separate "create an account" step — a first-time
-// address gets a profile via handle_new_user() (0016) the moment the link is clicked,
-// defaulting to role 'client' since that's this flow's whole point (frictionless
-// booking). Owners still go through /register, which needs their explicit role choice.
+// Passwordless: one email field (plus a client/owner toggle), no separate "create an
+// account" step — a first-time address gets a profile via handle_new_user() (0016) the
+// moment the link is clicked. The chosen role rides along as auth user_metadata (the same
+// channel /register's signUp() uses), so handle_new_user() picks it up identically —
+// password signup via /register stays available as a fallback for anyone who wants to set
+// a password and business details upfront.
 export async function sendMagicLink(
   _prevState: MagicLinkActionState,
   formData: FormData,
 ): Promise<MagicLinkActionState> {
   const parsed = magicLinkSchema.safeParse({
     email: formData.get("email"),
+    role: formData.get("role") || undefined,
     next: formData.get("next") || undefined,
   });
 
@@ -50,6 +53,7 @@ export async function sendMagicLink(
     options: {
       shouldCreateUser: true,
       emailRedirectTo: callbackUrl.toString(),
+      data: { role: parsed.data.role },
     },
   });
 
