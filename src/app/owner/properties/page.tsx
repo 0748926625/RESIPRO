@@ -12,7 +12,14 @@ const STATUS_LABELS: Record<string, string> = {
   [PROPERTY_STATUSES.ARCHIVED]: "Archivée",
 };
 
-export default async function OwnerPropertiesPage() {
+export default async function OwnerPropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ archived?: string }>;
+}) {
+  const { archived } = await searchParams;
+  const showArchived = archived === "1";
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,11 +31,20 @@ export default async function OwnerPropertiesPage() {
     .eq("profile_id", user!.id)
     .single();
 
-  const { data: properties } = await supabase
+  let query = supabase
     .from("properties")
     .select("id, name, city, status, base_price, currency")
     .eq("owner_id", owner?.id ?? "")
     .order("created_at", { ascending: false });
+
+  // A deleted residence either vanishes outright (0039) or, when booking history blocks a
+  // real DELETE, falls back to 'archived' — either way it should disappear from this list
+  // by default, matching what "supprimer" means everywhere else in the app.
+  if (!showArchived) {
+    query = query.neq("status", "archived");
+  }
+
+  const { data: properties } = await query;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
@@ -71,6 +87,10 @@ export default async function OwnerPropertiesPage() {
           ))}
         </ul>
       )}
+
+      <Link href={showArchived ? "/owner/properties" : "/owner/properties?archived=1"} className="text-xs text-foreground/50 underline">
+        {showArchived ? "Masquer les résidences supprimées" : "Voir les résidences supprimées"}
+      </Link>
     </div>
   );
 }

@@ -15,9 +15,10 @@ export type ArchivePropertyState = {
   error?: string;
 };
 
-// "Delete a residence": soft delete via archive_property() (0038) rather than a hard
-// DELETE — bookings/payments tied to this property have no cascade and must survive for
-// audit purposes. The RPC itself refuses if any future, non-cancelled booking remains.
+// "Delete a residence": archive_property() (0039) hard-deletes the row when nothing
+// FK-restricts it (no booking history), and falls back to archiving only when it does —
+// bookings/payments must survive for audit purposes. The RPC itself refuses if any future,
+// non-cancelled booking remains.
 export async function archiveProperty(propertyId: string): Promise<ArchivePropertyState> {
   const supabase = await createClient();
   const { error } = await supabase.rpc("archive_property", { p_property_id: propertyId });
