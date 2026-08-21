@@ -6,9 +6,8 @@ import { windowsFromRules } from "@/lib/services/availability.service";
 import { createClient } from "@/lib/supabase/server";
 import { DAY_OF_WEEK_LABELS } from "@/lib/validations/availability.schema";
 
-import { joinSharedBooking } from "./actions";
-import { BookingForm } from "./booking-form";
-import { SharedBookingForm } from "./shared-booking-form";
+import { joinSharedBooking, requestClassicBooking, requestSharedBooking } from "./actions";
+import { BookingCalendar } from "./booking-calendar";
 
 type Property = {
   id: string;
@@ -81,7 +80,7 @@ export default async function ResidenceDetailPage({
   }
 
   const supabase = await createClient();
-  const [{ data: rules }, { data: viewerData }, { data: openRequests }] = await Promise.all([
+  const [{ data: rules }, { data: blockRows }, { data: viewerData }, { data: openRequests }] = await Promise.all([
     supabase
       .from("availability_rules")
       .select("day_of_week, open_time, close_time")
@@ -89,6 +88,11 @@ export default async function ResidenceDetailPage({
       .eq("is_active", true)
       .order("day_of_week")
       .order("open_time"),
+    supabase
+      .from("availability_blocks")
+      .select("starts_at, ends_at")
+      .eq("property_id", property.id)
+      .order("starts_at"),
     supabase.auth.getUser(),
     supabase
       .from("shared_booking_requests")
@@ -103,6 +107,10 @@ export default async function ResidenceDetailPage({
     openTime: rule.open_time,
     closeTime: rule.close_time,
     isActive: true,
+  }));
+  const activeBlocks = (blockRows ?? []).map((block) => ({
+    start: new Date(block.starts_at),
+    end: new Date(block.ends_at),
   }));
 
   const now = new Date();
@@ -216,7 +224,14 @@ export default async function ResidenceDetailPage({
 
       {viewerData.user ? (
         <>
-          <BookingForm propertyId={property.id} basePrice={property.base_price} currency={property.currency} />
+          <BookingCalendar
+            action={requestClassicBooking.bind(null, property.id)}
+            rules={activeRules}
+            blocks={activeBlocks}
+            title="Réserver"
+            priceLabel={`${property.base_price} ${property.currency}`}
+            submitLabel="Réserver ce créneau"
+          />
 
           <div className="flex flex-col gap-3">
             <h2 className="text-sm font-medium text-foreground">Réservation partagée à deux</h2>
@@ -261,7 +276,14 @@ export default async function ResidenceDetailPage({
                 Aucune demande de partage en attente pour cette résidence pour le moment.
               </p>
             )}
-            <SharedBookingForm propertyId={property.id} basePrice={property.base_price} currency={property.currency} />
+            <BookingCalendar
+              action={requestSharedBooking.bind(null, property.id)}
+              rules={activeRules}
+              blocks={activeBlocks}
+              title="Créer une demande de partage"
+              priceLabel={`${Math.round(property.base_price / 2)} ${property.currency} / personne`}
+              submitLabel="Créer la demande"
+            />
           </div>
         </>
       ) : (
