@@ -6,6 +6,7 @@ import { totalMinutes, windowsFromRules, type AvailabilityRule } from "@/lib/ser
 import { addDays, isSameDay } from "@/lib/services/calendar.service";
 import { BOOKING_STATUS_LABELS } from "@/lib/constants/statuses";
 import type { BookingStatus } from "@/lib/constants/statuses";
+import { formatBookingRange } from "@/lib/format/booking-range";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function OwnerDashboardPage() {
@@ -163,7 +164,7 @@ export default async function OwnerDashboardPage() {
               <li key={booking.id} className="flex items-center justify-between px-3 py-2">
                 <span>
                   {(booking.properties as { name: string } | null)?.name ?? "Résidence"} — {booking.booking_code} ·{" "}
-                  {new Date(booking.starts_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}
+                  {formatBookingRange(booking.starts_at, booking.ends_at)}
                 </span>
                 <span className="text-xs text-foreground/50">
                   {BOOKING_STATUS_LABELS[booking.status as BookingStatus] ?? booking.status}

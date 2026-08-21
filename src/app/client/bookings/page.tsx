@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { BOOKING_STATUS_LABELS, NON_CANCELLABLE_BOOKING_STATUSES } from "@/lib/constants/statuses";
 import { cancelBooking } from "@/lib/bookings/actions";
+import { formatBookingRange } from "@/lib/format/booking-range";
 import { createClient } from "@/lib/supabase/server";
 import type { BookingStatus } from "@/lib/constants/statuses";
 
@@ -57,12 +58,7 @@ export default async function ClientBookingsPage() {
                     {booking.properties?.name ?? "Résidence"} — {booking.booking_code}
                   </p>
                   <p className="text-foreground/60">
-                    {booking.properties?.city} ·{" "}
-                    {new Date(segment.starts_at).toLocaleString("fr-FR", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}{" "}
-                    – {new Date(segment.ends_at).toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                    {booking.properties?.city} · {formatBookingRange(segment.starts_at, segment.ends_at)}
                   </p>
                   <p className="text-xs text-foreground/50">
                     {BOOKING_STATUS_LABELS[booking.status] ?? booking.status} · {segment.price_share}

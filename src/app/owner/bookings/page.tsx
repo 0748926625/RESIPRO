@@ -1,6 +1,7 @@
 import { BOOKING_STATUS_LABELS } from "@/lib/constants/statuses";
 import type { BookingStatus } from "@/lib/constants/statuses";
 import { ownerConfirmBooking } from "@/lib/bookings/payment-actions";
+import { formatBookingRange } from "@/lib/format/booking-range";
 import { createClient } from "@/lib/supabase/server";
 
 type BookingRow = {
@@ -41,9 +42,7 @@ export default async function OwnerBookingsPage() {
                   {booking.properties?.name ?? "Résidence"} — {booking.booking_code}
                 </p>
                 <p className="text-foreground/60">
-                  {booking.properties?.city} ·{" "}
-                  {new Date(booking.starts_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })} –{" "}
-                  {new Date(booking.ends_at).toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                  {booking.properties?.city} · {formatBookingRange(booking.starts_at, booking.ends_at)}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-2">

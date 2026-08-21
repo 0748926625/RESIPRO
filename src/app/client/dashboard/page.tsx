@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { BOOKING_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/constants/statuses";
 import type { BookingStatus, PaymentStatus } from "@/lib/constants/statuses";
+import { formatBookingRange } from "@/lib/format/booking-range";
 import { createClient } from "@/lib/supabase/server";
 
 type UpcomingSegment = {
@@ -104,7 +105,7 @@ export default async function ClientDashboardPage() {
               <li key={segment.id} className="flex items-center justify-between px-3 py-2">
                 <span>
                   {segment.booking?.properties?.name ?? "Résidence"} — {segment.booking?.booking_code} ·{" "}
-                  {new Date(segment.starts_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}
+                  {formatBookingRange(segment.starts_at, segment.ends_at)}
                 </span>
                 <span className="text-xs text-foreground/50">
                   {segment.booking ? (BOOKING_STATUS_LABELS[segment.booking.status] ?? segment.booking.status) : ""}

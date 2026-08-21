@@ -2,6 +2,7 @@ import { BOOKING_STATUS_LABELS, NON_CANCELLABLE_BOOKING_STATUSES } from "@/lib/c
 import type { BookingStatus } from "@/lib/constants/statuses";
 import { cancelBooking } from "@/lib/bookings/actions";
 import { markReservedWithOwner } from "@/lib/bookings/payment-actions";
+import { formatBookingRange } from "@/lib/format/booking-range";
 import { createClient } from "@/lib/supabase/server";
 
 type BookingRow = {
@@ -43,9 +44,7 @@ export default async function AdminBookingsPage() {
                     {booking.properties?.name ?? "Résidence"} — {booking.booking_code}
                   </p>
                   <p className="text-foreground/60">
-                    {booking.properties?.city} ·{" "}
-                    {new Date(booking.starts_at).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })} –{" "}
-                    {new Date(booking.ends_at).toLocaleTimeString("fr-FR", { timeStyle: "short" })}
+                    {booking.properties?.city} · {formatBookingRange(booking.starts_at, booking.ends_at)}
                   </p>
                   <p className="text-xs text-foreground/50">
                     {BOOKING_STATUS_LABELS[booking.status] ?? booking.status} · {booking.total_price} {booking.currency}
