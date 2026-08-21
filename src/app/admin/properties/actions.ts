@@ -43,3 +43,19 @@ export async function archiveProperty(propertyId: string) {
     PROPERTY_STATUSES.SUSPENDED,
   ]);
 }
+
+export async function setManagerPhoneVisibility(propertyId: string, formData: FormData) {
+  const visibility = formData.get("visibility");
+  if (visibility !== "hidden" && visibility !== "admin_only" && visibility !== "revealed") {
+    return;
+  }
+
+  const supabase = await createClient();
+  await supabase.rpc("set_manager_phone_visibility", {
+    p_property_id: propertyId,
+    p_visibility: visibility,
+  });
+
+  revalidatePath("/admin/properties");
+  revalidatePath(`/owner/properties/${propertyId}`);
+}

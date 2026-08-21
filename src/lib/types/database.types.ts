@@ -1252,6 +1252,13 @@ export type Database = {
         Args: { p_reason?: string; p_transaction_id: string }
         Returns: string
       }
+      set_manager_phone_visibility: {
+        Args: {
+          p_property_id: string
+          p_visibility: Database["public"]["Enums"]["manager_phone_visibility"]
+        }
+        Returns: undefined
+      }
       set_owner_verified: {
         Args: { p_owner_id: string; p_verified: boolean }
         Returns: undefined

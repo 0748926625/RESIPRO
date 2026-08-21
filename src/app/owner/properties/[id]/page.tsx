@@ -19,6 +19,12 @@ const STATUS_LABELS: Record<string, string> = {
   [PROPERTY_STATUSES.ARCHIVED]: "Archivée",
 };
 
+const PHONE_VISIBILITY_LABELS: Record<string, string> = {
+  hidden: "Jamais communiqué",
+  admin_only: "Visible par le Super Admin uniquement",
+  revealed: "Communiqué par le Super Admin à un client",
+};
+
 export default async function EditPropertyPage({
   params,
 }: {
@@ -59,6 +65,10 @@ export default async function EditPropertyPage({
           <h1 className="text-xl font-semibold text-foreground">{property.name}</h1>
           <p className="text-sm text-foreground/60">
             Statut : {STATUS_LABELS[property.status] ?? property.status}
+          </p>
+          <p className="text-xs text-foreground/50">
+            Votre numéro : {PHONE_VISIBILITY_LABELS[property.manager_phone_visibility] ?? property.manager_phone_visibility}{" "}
+            — décidé par le Super Admin (§6).
           </p>
           <div className="flex gap-3">
             <Link href={`/owner/properties/${id}/availability`} className="text-xs text-foreground underline">
@@ -135,7 +145,6 @@ export default async function EditPropertyPage({
             checkOutTime: property.check_out_time,
             cleaningBufferMinutes: property.cleaning_buffer_minutes,
             houseRules: property.house_rules ?? undefined,
-            managerPhoneVisibility: property.manager_phone_visibility,
             amenityIds: (propertyAmenities ?? []).map((row) => row.amenity_id),
           }}
         />

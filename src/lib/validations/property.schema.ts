@@ -30,7 +30,6 @@ export const propertyInputSchema = z.object({
   checkOutTime: optionalText,
   cleaningBufferMinutes: z.coerce.number().int().min(0).default(0),
   houseRules: optionalText,
-  managerPhoneVisibility: z.enum(["hidden", "admin_only", "revealed"]).default("admin_only"),
   amenityIds: z.array(z.string().uuid()).default([]),
 });
 
@@ -52,7 +51,6 @@ export function propertyFormDataToInput(formData: FormData) {
     checkOutTime: formData.get("checkOutTime"),
     cleaningBufferMinutes: formData.get("cleaningBufferMinutes") || 0,
     houseRules: formData.get("houseRules"),
-    managerPhoneVisibility: formData.get("managerPhoneVisibility") || "admin_only",
     amenityIds: formData.getAll("amenityIds"),
   };
 }

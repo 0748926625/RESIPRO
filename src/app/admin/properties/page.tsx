@@ -8,6 +8,7 @@ import {
   archiveProperty,
   reinstateProperty,
   rejectProperty,
+  setManagerPhoneVisibility,
   suspendProperty,
 } from "./actions";
 
@@ -18,6 +19,12 @@ const STATUS_LABELS: Record<string, string> = {
   [PROPERTY_STATUSES.REJECTED]: "Refusée",
   [PROPERTY_STATUSES.SUSPENDED]: "Suspendue",
   [PROPERTY_STATUSES.ARCHIVED]: "Archivée",
+};
+
+const PHONE_VISIBILITY_LABELS: Record<string, string> = {
+  hidden: "Jamais communiqué",
+  admin_only: "Visible par vous uniquement",
+  revealed: "Communiqué au client",
 };
 
 const FILTERS = [
@@ -39,7 +46,7 @@ export default async function AdminPropertiesPage({
   const supabase = await createClient();
   let query = supabase
     .from("properties")
-    .select("id, name, city, status, owner_id, owners(business_name, profiles(full_name))")
+    .select("id, name, city, status, manager_phone_visibility, owner_id, owners(business_name, profiles(full_name))")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -53,6 +60,7 @@ export default async function AdminPropertiesPage({
     name: string;
     city: string;
     status: string;
+    manager_phone_visibility: string;
     owner_id: string;
     owners: { business_name: string | null; profiles: { full_name: string } | null } | null;
   }>;
@@ -82,7 +90,7 @@ export default async function AdminPropertiesPage({
       ) : (
         <ul className="flex flex-col divide-y divide-foreground/10 rounded-md border border-foreground/10">
           {properties.map((property) => (
-            <li key={property.id} className="flex items-center justify-between gap-4 px-4 py-3 text-sm">
+            <li key={property.id} className="flex flex-col gap-3 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-medium text-foreground">{property.name}</p>
                 <p className="text-foreground/60">
@@ -90,8 +98,25 @@ export default async function AdminPropertiesPage({
                   {property.owners?.profiles?.full_name ?? property.owners?.business_name ?? "—"}
                 </p>
                 <p className="text-xs text-foreground/50">{STATUS_LABELS[property.status]}</p>
+                <form action={setManagerPhoneVisibility.bind(null, property.id)} className="mt-1 flex items-center gap-2">
+                  <label className="text-[10px] text-foreground/40">Numéro du gérant :</label>
+                  <select
+                    name="visibility"
+                    defaultValue={property.manager_phone_visibility}
+                    className="rounded-md border border-foreground/15 bg-transparent px-2 py-1 text-xs"
+                  >
+                    {Object.entries(PHONE_VISIBILITY_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="submit" className="rounded-md border border-foreground/20 px-2 py-1 text-[11px]">
+                    Mettre à jour
+                  </button>
+                </form>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {property.status === "pending_review" ? (
                   <>
                     <form action={approveProperty.bind(null, property.id)}>

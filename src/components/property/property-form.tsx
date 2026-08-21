@@ -36,7 +36,6 @@ export function PropertyForm({
     checkOutTime?: string | null;
     cleaningBufferMinutes?: number;
     houseRules?: string;
-    managerPhoneVisibility?: string;
     amenityIds?: string[];
   };
   submitLabel: string;
@@ -176,25 +175,6 @@ export function PropertyForm({
           defaultValue={defaultValues?.houseRules}
           className="rounded-md border border-foreground/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-foreground/40"
         />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label htmlFor="managerPhoneVisibility" className="text-sm font-medium text-foreground">
-          Visibilité de votre numéro
-        </label>
-        <select
-          id="managerPhoneVisibility"
-          name="managerPhoneVisibility"
-          defaultValue={defaultValues?.managerPhoneVisibility ?? "admin_only"}
-          className="rounded-md border border-foreground/15 bg-transparent px-3 py-2 text-sm"
-        >
-          <option value="hidden">Jamais communiqué</option>
-          <option value="admin_only">Visible par le Super Admin uniquement</option>
-          <option value="revealed">Communiqué au client</option>
-        </select>
-        <p className="text-xs text-foreground/50">
-          Le Super Admin décide quand vos coordonnées sont communiquées (§6).
-        </p>
       </div>
 
       <fieldset className="flex flex-col gap-2">
