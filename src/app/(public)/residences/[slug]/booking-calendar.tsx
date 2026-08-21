@@ -205,9 +205,13 @@ export function BookingCalendar({
             const fullyBlocked = isDayFullyBlocked(date, checkInTime, allowsHalfDay, blocks);
             const inSelectedRange = date >= rangeStart && date <= rangeEnd;
 
+            const isOccupied = inMonth && !inPast && fullyBlocked;
+
+            // Occupied reads as a solid red fill for a client (can't book this date) — the
+            // opposite of the owner-facing calendar, where occupied is green.
             let cellClass = "bg-transparent";
             if (inMonth && !inPast) {
-              cellClass = fullyBlocked ? "bg-red-500/10" : "bg-emerald-500/10";
+              cellClass = isOccupied ? "bg-red-500" : "bg-emerald-500/10";
             }
             if (inSelectedRange) cellClass += " ring-2 ring-primary ring-inset";
 
@@ -219,7 +223,7 @@ export function BookingCalendar({
                 onPointerDown={(event) => handlePointerDown(event, date)}
                 onPointerEnter={() => extendSelection(date)}
                 className={`flex min-h-12 flex-col items-center justify-center gap-0.5 border-b border-r border-foreground/5 p-1 text-xs ${cellClass} ${
-                  inMonth && !inPast ? "text-foreground" : "text-foreground/25"
+                  isOccupied ? "text-white" : inMonth && !inPast ? "text-foreground" : "text-foreground/25"
                 }`}
               >
                 <span className={isSameDay(date, today) ? "font-semibold underline" : ""}>{date.getDate()}</span>

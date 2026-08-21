@@ -130,30 +130,42 @@ export function MonthCalendar({
         <div className="grid grid-cols-7">
           {grid.map((date) => {
             const inMonth = date.getMonth() === month.getMonth();
-            const { hasRule, isAvailable, blocksOnDay } = classifyDay(rules, blocks, date);
+            const { hasRule, blocksOnDay } = classifyDay(rules, blocks, date);
             const key = dateKey(date);
             const isQuickBlocked = quickBlockedDates.has(key);
             const isPendingDrag = dragDates.includes(key);
 
+            // Occupied reads as green for an owner (a booked date is revenue, not a
+            // problem) — the opposite of the client-facing calendar, where occupied is
+            // red. Solid fill (not a light tint) so it's legible at a glance. Keyed off
+            // blocksOnDay directly (not hasRule/isAvailable) so a quick-marked block still
+            // shows as occupied even on a day with no recurring availability rule.
+            const isOccupied = inMonth && blocksOnDay.length > 0;
+
             let cellClass = "bg-transparent";
             if (inMonth) {
-              if (!hasRule) cellClass = "bg-foreground/5";
-              else if (isAvailable) cellClass = "bg-emerald-500/10";
-              else cellClass = "bg-red-500/10";
+              if (isOccupied) cellClass = "bg-emerald-500";
+              else if (!hasRule) cellClass = "bg-foreground/5";
             }
             if (isPendingDrag) {
-              cellClass = dragAction === "add" ? "bg-red-500/30" : "bg-emerald-500/20";
+              cellClass = dragAction === "add" ? "bg-emerald-500/70" : "bg-foreground/10";
             }
 
             const sharedClass = `flex min-h-20 flex-col gap-1 border-b border-r border-foreground/5 p-1.5 text-xs ${cellClass} ${
-              inMonth ? "text-foreground" : "text-foreground/30"
+              isOccupied && !isPendingDrag ? "text-white" : inMonth ? "text-foreground" : "text-foreground/30"
             }`;
 
             const cellContent = (
               <>
                 <span className={isSameDay(date, today) ? "font-semibold underline" : ""}>{date.getDate()}</span>
                 {blocksOnDay.length > 0 ? (
-                  <span className="rounded bg-red-500/20 px-1 py-0.5 text-[10px] text-red-700 dark:text-red-300">
+                  <span
+                    className={`rounded px-1 py-0.5 text-[10px] ${
+                      isOccupied && !isPendingDrag
+                        ? "bg-white/20 text-white"
+                        : "bg-red-500/20 text-red-700 dark:text-red-300"
+                    }`}
+                  >
                     {isQuickBlocked ? "Occupé" : `${blocksOnDay.length} blocage${blocksOnDay.length > 1 ? "s" : ""}`}
                   </span>
                 ) : null}

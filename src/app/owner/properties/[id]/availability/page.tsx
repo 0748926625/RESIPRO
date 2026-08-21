@@ -103,10 +103,10 @@ export default async function PropertyAvailabilityPage({
         </Link>
         <div className="ml-auto flex items-center gap-3 text-xs text-foreground/60">
           <span className="inline-flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/40" /> disponible
+            <span className="h-2.5 w-2.5 rounded-full border border-foreground/30" /> disponible
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-500/40" /> bloqué
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> occupé
           </span>
           <span className="inline-flex items-center gap-1">
             <span className="h-2.5 w-2.5 rounded-full bg-foreground/20" /> fermé
