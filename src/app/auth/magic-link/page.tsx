@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
@@ -24,6 +24,20 @@ function readErrorFromHash(): string | null {
 }
 
 export default function MagicLinkCompletePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto flex min-h-[50vh] max-w-sm flex-1 flex-col items-center justify-center gap-2 px-4 text-center text-sm">
+          <p className="text-foreground/60">Connexion en cours…</p>
+        </div>
+      }
+    >
+      <MagicLinkComplete />
+    </Suspense>
+  );
+}
+
+function MagicLinkComplete() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(readErrorFromHash);
 
