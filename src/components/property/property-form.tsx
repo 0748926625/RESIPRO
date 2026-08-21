@@ -18,6 +18,7 @@ export function PropertyForm({
   amenities,
   defaultValues,
   submitLabel,
+  onSaved,
 }: {
   action: (state: PropertyFormState, formData: FormData) => Promise<PropertyFormState>;
   amenities: Amenity[];
@@ -40,8 +41,19 @@ export function PropertyForm({
     amenityIds?: string[];
   };
   submitLabel: string;
+  // Fires after a save with no error/fieldErrors — not inside an effect, so a caller can
+  // safely pop a confirm() dialog from it (e.g. "submit for review now?") without it firing
+  // again on every re-render. Gets the just-submitted name, not the (possibly stale)
+  // server-rendered defaultValues.name, since the page hasn't revalidated yet at this point.
+  onSaved?: (name: string) => void;
 }) {
-  const [state, formAction] = useActionState(action, {});
+  const [state, formAction] = useActionState(async (prevState: PropertyFormState, formData: FormData) => {
+    const result = await action(prevState, formData);
+    if (!result.error && !result.fieldErrors) {
+      onSaved?.(String(formData.get("name") ?? ""));
+    }
+    return result;
+  }, {});
   const selectedAmenities = new Set(defaultValues?.amenityIds ?? []);
 
   return (
