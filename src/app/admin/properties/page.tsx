@@ -46,7 +46,9 @@ export default async function AdminPropertiesPage({
   const supabase = await createClient();
   let query = supabase
     .from("properties")
-    .select("id, name, city, status, manager_phone_visibility, owner_id, owners(business_name, profiles(full_name))")
+    .select(
+      "id, name, city, status, manager_phone_visibility, owner_id, owners(business_name, profiles(full_name, phone)), property_images(url, is_cover)",
+    )
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -62,7 +64,8 @@ export default async function AdminPropertiesPage({
     status: string;
     manager_phone_visibility: string;
     owner_id: string;
-    owners: { business_name: string | null; profiles: { full_name: string } | null } | null;
+    owners: { business_name: string | null; profiles: { full_name: string; phone: string | null } | null } | null;
+    property_images: { url: string; is_cover: boolean }[];
   }>;
 
   return (
@@ -89,34 +92,54 @@ export default async function AdminPropertiesPage({
         <p className="text-sm text-foreground/60">Aucune résidence dans ce filtre.</p>
       ) : (
         <ul className="flex flex-col divide-y divide-foreground/10 rounded-md border border-foreground/10">
-          {properties.map((property) => (
-            <li key={property.id} className="flex flex-col gap-3 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-medium text-foreground">{property.name}</p>
-                <p className="text-foreground/60">
-                  {property.city} ·{" "}
-                  {property.owners?.profiles?.full_name ?? property.owners?.business_name ?? "—"}
-                </p>
-                <p className="text-xs text-foreground/50">{STATUS_LABELS[property.status]}</p>
-                <form action={setManagerPhoneVisibility.bind(null, property.id)} className="mt-1 flex items-center gap-2">
-                  <label className="text-[10px] text-foreground/40">Numéro du gérant :</label>
-                  <select
-                    name="visibility"
-                    defaultValue={property.manager_phone_visibility}
-                    className="rounded-md border border-foreground/15 bg-transparent px-2 py-1 text-xs"
-                  >
-                    {Object.entries(PHONE_VISIBILITY_LABELS).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className="rounded-md border border-foreground/20 px-2 py-1 text-[11px]">
-                    Mettre à jour
-                  </button>
-                </form>
-              </div>
-              <div className="flex flex-wrap gap-2">
+          {properties.map((property) => {
+            const cover =
+              property.property_images.find((image) => image.is_cover) ?? property.property_images[0];
+            return (
+              <li
+                key={property.id}
+                className="flex flex-col gap-3 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex gap-3">
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-foreground/5">
+                    {cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={cover.url} alt="" className="h-full w-full object-cover" />
+                    ) : null}
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">{property.name}</p>
+                    <p className="text-foreground/60">
+                      {property.city} ·{" "}
+                      {property.owners?.profiles?.full_name ?? property.owners?.business_name ?? "—"}
+                    </p>
+                    <p className="text-xs text-foreground/50">
+                      Tél. gérant : {property.owners?.profiles?.phone ?? "non renseigné"}
+                    </p>
+                    <p className="text-xs text-foreground/50">{STATUS_LABELS[property.status]}</p>
+                    <form
+                      action={setManagerPhoneVisibility.bind(null, property.id)}
+                      className="mt-1 flex items-center gap-2"
+                    >
+                      <label className="text-[10px] text-foreground/40">Numéro du gérant :</label>
+                      <select
+                        name="visibility"
+                        defaultValue={property.manager_phone_visibility}
+                        className="rounded-md border border-foreground/15 bg-transparent px-2 py-1 text-xs"
+                      >
+                        {Object.entries(PHONE_VISIBILITY_LABELS).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                      <button type="submit" className="rounded-md border border-foreground/20 px-2 py-1 text-[11px]">
+                        Mettre à jour
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
                 {property.status === "pending_review" ? (
                   <>
                     <form action={approveProperty.bind(null, property.id)}>
@@ -154,7 +177,8 @@ export default async function AdminPropertiesPage({
                 ) : null}
               </div>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>
