@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
@@ -9,6 +10,25 @@ export type PropertyFormState = {
   error?: string;
   fieldErrors?: Record<string, string[]>;
 };
+
+export type ArchivePropertyState = {
+  error?: string;
+};
+
+// "Delete a residence": soft delete via archive_property() (0038) rather than a hard
+// DELETE — bookings/payments tied to this property have no cascade and must survive for
+// audit purposes. The RPC itself refuses if any future, non-cancelled booking remains.
+export async function archiveProperty(propertyId: string): Promise<ArchivePropertyState> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("archive_property", { p_property_id: propertyId });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/owner/properties");
+  redirect("/owner/properties");
+}
 
 export async function updateProperty(
   propertyId: string,

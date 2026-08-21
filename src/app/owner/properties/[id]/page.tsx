@@ -9,6 +9,7 @@ import { storagePathFromPublicUrl } from "@/lib/services/property.service";
 import { createClient } from "@/lib/supabase/server";
 
 import { deletePropertyImage, setPropertyBranding, submitForReview, updateProperty } from "./actions";
+import { DeletePropertyButton } from "./delete-property-button";
 
 const STATUS_LABELS: Record<string, string> = {
   [PROPERTY_STATUSES.DRAFT]: "Brouillon",
@@ -150,6 +151,17 @@ export default async function EditPropertyPage({
           }}
         />
       </section>
+
+      {property.status !== "archived" ? (
+        <section className="flex flex-col gap-3 rounded-lg border border-red-600/20 p-4">
+          <h2 className="text-sm font-medium text-foreground">Zone de danger</h2>
+          <p className="text-xs text-foreground/60">
+            Supprimer une résidence la retire des recherches et des disponibilités futures.
+            L&apos;historique des réservations et des paiements reste conservé.
+          </p>
+          <DeletePropertyButton propertyId={id} propertyName={property.name} />
+        </section>
+      ) : null}
     </div>
   );
 }

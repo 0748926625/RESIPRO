@@ -1171,6 +1171,7 @@ export type Database = {
         Args: { p_booking_id: string }
         Returns: undefined
       }
+      archive_property: { Args: { p_property_id: string }; Returns: undefined }
       cancel_booking: { Args: { p_booking_id: string }; Returns: undefined }
       cancel_shared_booking_request: {
         Args: { p_request_id: string }
